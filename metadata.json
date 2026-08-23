@@ -1,0 +1,6 @@
+{
+  "name": "ZerDonghua",
+  "description": "Platform streaming Donghua (Chinese Anime) terlengkap dengan update harian, jadwal rilis, multi-server player HD, subtitle Indonesia, dan pencarian instan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

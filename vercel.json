@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/donghua",
+      "destination": "/api/donghua"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/donghua"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

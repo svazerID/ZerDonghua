@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-canvas: #06060b;
+    --color-surface-dark: #0a0c10;
+    --color-surface-elevated: #0d1015;
+    --color-surface-alt: #101019;
+    --color-primary: #7c3aed;
+    --color-primary-light: #a78bfa;
+    --color-brand-glow: #a78bfa66;
+    --color-status-orange: #f05100;
+    --color-status-green: #00a544;
+    --color-status-red: #e40014;
+    --color-text-primary: #ffffff;
+    --color-text-muted: oklch(70.4% 0.04 256.788);
+    --border-subtle: #ffffff1a;
+    --border-elevated: #ffffff26;
+  }
+}
+
+/* Custom Design System Utility Classes */
+.bg-canvas {
+  background-color: #06060b;
+}
+
+.bg-surface-dark {
+  background-color: #0a0c10;
+}
+
+.bg-surface-elevated {
+  background-color: #0d1015;
+}
+
+.bg-surface-alt {
+  background-color: #101019;
+}
+
+.text-muted {
+  color: oklch(70.4% 0.04 256.788);
+}
+
+.border-subtle {
+  border-color: #ffffff1a;
+}
+
+.border-glow {
+  border-color: #a78bfa66;
+}
+
+.shadow-card-hover {
+  box-shadow: 0 24px 50px -12px #000000bf;
+}
+
+.shadow-focus-ring {
+  box-shadow: 0 0 0 1px #a78bfa66;
+}
+
+.shadow-ambient {
+  box-shadow: 0 8px 30px #00000099;
+}
+
+.btn-primary {
+  background: linear-gradient(to bottom right, #7c3aed, #a78bfa);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8px 30px #00000099;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 35px #000000bf;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-surface {
+  background-color: #ffffff1a;
+  border: 1px solid #ffffff26;
+  color: #ffffff;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-surface:hover {
+  background-color: #ffffff26;
+}
+
+.btn-surface:active {
+  transform: scale(0.96);
+}
