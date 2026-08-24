@@ -168,10 +168,10 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
               </div>
 
               {/* Right Column: Compact Poster Preview */}
-              <div className="lg:col-span-4 hidden lg:flex justify-end">
+              <div className="flex lg:col-span-4 justify-center lg:justify-end pt-1">
                 <div
                   onClick={() => onOpenDetail(current.slug)}
-                  className="relative group w-52 xl:w-60 aspect-[3/4] rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
+                  className="relative group w-32 sm:w-44 lg:w-52 xl:w-60 aspect-[3/4] rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
                 >
                   <Image
                     src={current.cover}
