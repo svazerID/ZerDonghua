@@ -1,0 +1,37 @@
+// Normalization shared by the server route and the client API layer, because
+// episode data can arrive through either path.
+//
+// The embed snippet carries the authoritative, complete URL. The API's
+// streamUrl is sometimes truncated (e.g. Dailymotion video id cut off)
+// and HTML-entity encoded (&amp;), which breaks when set as iframe.src.
+//
+// Dailymotion URLs are additionally normalized to the standard /embed/video/
+// form: custom partner players (geo.dailymotion.com/player/*.html) are
+// domain-locked to the source site and refuse playback elsewhere.
+
+export interface MirrorLike {
+  name?: string;
+  streamUrl?: string | null;
+  embedCode?: string;
+}
+
+export function normalizeMirrors<T extends MirrorLike>(mirrors: T[]): T[] {
+  return (mirrors || []).map((m: any) => {
+    let streamUrl = m.streamUrl || '';
+    if (m.embedCode) {
+      const srcMatch = m.embedCode.match(/src=["']([^"']+)["']/i);
+      if (srcMatch) streamUrl = srcMatch[1];
+    }
+    streamUrl = String(streamUrl).replace(/&amp;/g, '&');
+
+    const dmId =
+      streamUrl.match(/dailymotion\.com\/(?:embed\/)?video\/([A-Za-z0-9]+)/i)?.[1] ||
+      streamUrl.match(/[?&]video=([A-Za-z0-9]+)/i)?.[1] ||
+      streamUrl.match(/dai\.ly\/([A-Za-z0-9]+)/i)?.[1];
+    if (dmId && /dailymotion|dai\.ly/i.test(streamUrl)) {
+      streamUrl = `https://www.dailymotion.com/embed/video/${dmId}`;
+    }
+
+    return { ...m, streamUrl };
+  });
+}

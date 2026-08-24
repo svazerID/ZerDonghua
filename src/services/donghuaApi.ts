@@ -5,6 +5,7 @@ import {
   DonghuaGenre,
   DonghuaCardItem
 } from '../types';
+import { normalizeMirrors } from '../lib/mirrors';
 
 interface CacheEntry<T> {
   data: T;
@@ -221,7 +222,13 @@ export const donghuaApi = {
     return fetchWithDeduplication(
       `donghua_episode_${cleanSlug}`,
       async () => {
-        return await safeFetchDonghua({ action: 'episode', slug: cleanSlug });
+        const data = await safeFetchDonghua({ action: 'episode', slug: cleanSlug });
+        // The direct-remote fallback bypasses the server route, so mirrors must
+        // be normalized here as well (Dailymotion domain-locked player URLs).
+        if (data && Array.isArray(data.mirrors)) {
+          data.mirrors = normalizeMirrors(data.mirrors);
+        }
+        return data;
       },
       2 * 60 * 1000
     );

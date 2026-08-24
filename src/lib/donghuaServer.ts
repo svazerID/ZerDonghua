@@ -5,6 +5,7 @@ import {
   getFallbackDetail,
   getFallbackEpisode,
 } from '../../server/donghuaFallback';
+import { normalizeMirrors } from './mirrors';
 
 const scraper = new DonghubScraper();
 const REMOTE_API_BASE = 'https://api.alfisy.my.id/api/anime/donghub';
@@ -223,29 +224,7 @@ export async function getDonghua(
       }
 
       if (result && result.mirrors && Array.isArray(result.mirrors)) {
-        result.mirrors = result.mirrors.map((m: any) => {
-          let streamUrl = m.streamUrl || '';
-          // The embed snippet carries the authoritative, complete URL. The API's
-          // streamUrl is sometimes truncated (e.g. Dailymotion video id cut off)
-          // and HTML-entity encoded (&amp;), which breaks when set as iframe.src.
-          if (m.embedCode) {
-            const srcMatch = m.embedCode.match(/src=["']([^"']+)["']/i);
-            if (srcMatch) streamUrl = srcMatch[1];
-          }
-          streamUrl = streamUrl.replace(/&amp;/g, '&');
-          // Normalize all Dailymotion forms (embed URLs, dai.ly shorts, and
-          // custom partner players like geo.dailymotion.com/player/xhojl.html)
-          // to the standard /embed/video/ URL. Custom players are domain-locked
-          // to the source site and refuse playback elsewhere.
-          const dmId =
-            streamUrl.match(/dailymotion\.com\/(?:embed\/)?video\/([A-Za-z0-9]+)/i)?.[1] ||
-            streamUrl.match(/[?&]video=([A-Za-z0-9]+)/i)?.[1] ||
-            streamUrl.match(/dai\.ly\/([A-Za-z0-9]+)/i)?.[1];
-          if (dmId && /dailymotion|dai\.ly/i.test(streamUrl)) {
-            streamUrl = `https://www.dailymotion.com/embed/video/${dmId}`;
-          }
-          return { ...m, streamUrl };
-        });
+        result.mirrors = normalizeMirrors(result.mirrors);
 
         // Preferred server order: Dtube (lightest) first, then OKRU, then Dailymotion.
         // Dtube becomes the default selected mirror in the watch modal.
