@@ -108,9 +108,9 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
 
           {/* Banner Content */}
           <div className="relative z-10 p-4 sm:p-8 md:p-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-center">
+            <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
               {/* Left Column: Information & Actions */}
-              <div className="lg:col-span-8 space-y-3 sm:space-y-4">
+              <div className="flex-1 min-w-0 space-y-3 sm:space-y-4">
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-xl text-[11px] sm:text-xs font-semibold bg-[#7c3aed]/20 border border-[#a78bfa66] text-[#a78bfa]">
@@ -168,10 +168,10 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
               </div>
 
               {/* Right Column: Compact Poster Preview */}
-              <div className="flex lg:col-span-4 justify-center lg:justify-end pt-1">
+              <div className="shrink-0">
                 <div
                   onClick={() => onOpenDetail(current.slug)}
-                  className="relative group w-32 sm:w-44 lg:w-52 xl:w-60 aspect-[3/4] rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
+                  className="relative group w-20 sm:w-40 lg:w-52 xl:w-60 aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
                 >
                   <Image
                     src={current.cover}
@@ -181,8 +181,8 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
                     sizes="240px"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent hidden sm:block" />
+                  <div className="absolute bottom-3 left-3 right-3 hidden sm:flex items-center justify-between">
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-black/80 text-[#a78bfa] border border-[#ffffff1a]">
                       Rekomendasi #{currentIndex + 1}
                     </span>
