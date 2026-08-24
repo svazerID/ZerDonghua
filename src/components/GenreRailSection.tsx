@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Layers } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Layers, Rows, LayoutGrid } from 'lucide-react';
 import { donghuaApi } from '../services/donghuaApi';
 import { DonghuaCardItem } from '../types';
 import { DonghuaCard } from './DonghuaCard';
@@ -23,16 +23,24 @@ export const GenreRailSection: React.FC<GenreRailSectionProps> = ({
   isBookmarked
 }) => {
   const [items, setItems] = useState<DonghuaCardItem[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'slider' | 'grid'>('slider');
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let alive = true;
     setLoading(true);
+    setPage(1);
+    setItems([]);
     donghuaApi
-      .getDonghuaByGenre(genreSlug)
+      .getDonghuaByGenre(genreSlug, 1)
       .then((data) => {
-        if (alive) setItems(data.results || []);
+        if (!alive) return;
+        setItems(data.results || []);
+        setHasMore(data.pagination?.hasNextPage ?? false);
       })
       .catch((err) => console.error(`Failed to load genre ${genreSlug}:`, err))
       .finally(() => {
@@ -42,6 +50,20 @@ export const GenreRailSection: React.FC<GenreRailSectionProps> = ({
       alive = false;
     };
   }, [genreSlug]);
+
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    donghuaApi
+      .getDonghuaByGenre(genreSlug, page + 1)
+      .then((data) => {
+        setItems((prev) => [...prev, ...(data.results || [])]);
+        setHasMore(data.pagination?.hasNextPage ?? false);
+        setPage((p) => p + 1);
+      })
+      .catch((err) => console.error(`Failed to load more ${genreSlug}:`, err))
+      .finally(() => setLoadingMore(false));
+  };
 
   const handleScroll = (direction: 'left' | 'right') => {
     sliderRef.current?.scrollBy({ left: direction === 'left' ? -380 : 380, behavior: 'smooth' });
@@ -67,26 +89,55 @@ export const GenreRailSection: React.FC<GenreRailSectionProps> = ({
           )}
         </div>
 
-        {/* Prev / Next Arrows */}
+        {/* View Mode Toggle & Prev / Next Arrows */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => handleScroll('left')}
-            className="w-8 h-8 rounded-xl bg-[#ffffff1a] hover:bg-[#ffffff26] active:scale-95 border border-[#ffffff1a] flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
-            title="Geser ke kiri"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleScroll('right')}
-            className="w-8 h-8 rounded-xl bg-[#ffffff1a] hover:bg-[#ffffff26] active:scale-95 border border-[#ffffff1a] flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
-            title="Geser ke kanan"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center p-1 bg-[#0a0c10] rounded-2xl border border-[#ffffff1a]">
+            <button
+              onClick={() => setViewMode('slider')}
+              className={`p-1.5 rounded-xl transition-all cursor-pointer ${
+                viewMode === 'slider'
+                  ? 'bg-[#7c3aed] text-white shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Slide ke samping"
+            >
+              <Rows className="w-3.5 h-3.5 rotate-90" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-xl transition-all cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-[#7c3aed] text-white shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Tampilan Grid"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {viewMode === 'slider' && (
+            <>
+              <button
+                onClick={() => handleScroll('left')}
+                className="w-8 h-8 rounded-xl bg-[#ffffff1a] hover:bg-[#ffffff26] active:scale-95 border border-[#ffffff1a] flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="Geser ke kiri"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleScroll('right')}
+                className="w-8 h-8 rounded-xl bg-[#ffffff1a] hover:bg-[#ffffff26] active:scale-95 border border-[#ffffff1a] flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="Geser ke kanan"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Cards Slider */}
+      {/* Cards */}
       {loading ? (
         <div className="flex gap-3 sm:gap-4 overflow-hidden">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -96,7 +147,7 @@ export const GenreRailSection: React.FC<GenreRailSectionProps> = ({
             />
           ))}
         </div>
-      ) : (
+      ) : viewMode === 'slider' ? (
         <div
           ref={sliderRef}
           className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar"
@@ -116,6 +167,36 @@ export const GenreRailSection: React.FC<GenreRailSectionProps> = ({
               />
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="space-y-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            {items.map((item, index) => (
+              <DonghuaCard
+                key={item.slug || `${item.title}-${index}`}
+                item={item}
+                onSelect={onSelect}
+                onWatch={onWatch}
+                onToggleBookmark={onToggleBookmark}
+                isBookmarked={isBookmarked(item.slug)}
+              />
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="flex justify-center">
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-5 py-2 rounded-xl bg-[#7c3aed]/25 hover:bg-[#7c3aed]/40 active:scale-95 disabled:opacity-50 disabled:pointer-events-none border border-[#a78bfa66] text-xs font-bold text-[#c4b5fd] transition-all cursor-pointer inline-flex items-center gap-2"
+              >
+                {loadingMore && (
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#c4b5fd] border-t-transparent animate-spin" />
+                )}
+                {loadingMore ? 'Memuat...' : 'Tampilkan Lebih Banyak'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>
