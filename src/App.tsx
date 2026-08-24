@@ -3,20 +3,21 @@ import { Header } from './components/Header';
 import { SpotlightHero } from './components/SpotlightHero';
 import { GenreBar } from './components/GenreBar';
 import { FeaturedRail } from './components/FeaturedRail';
-import { HomeScheduleSection } from './components/HomeScheduleSection';
-import { HomeGenreShowcase } from './components/HomeGenreShowcase';
 import { ContinueWatchingSection } from './components/ContinueWatchingSection';
-import { PopularSliderSection } from './components/PopularSliderSection';
-import { OngoingSliderSection } from './components/OngoingSliderSection';
-import { LatestUpdatedSection } from './components/LatestUpdatedSection';
-import { PortalStatsBanner } from './components/PortalStatsBanner';
+import { MobileBottomNav } from './components/MobileBottomNav';
 const WeeklySchedule = lazy(() => import('./components/WeeklySchedule').then(m => ({ default: m.WeeklySchedule })));
 const SearchModal = lazy(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })));
 const DetailsModal = lazy(() => import('./components/DetailsModal').then(m => ({ default: m.DetailsModal })));
 const WatchModal = lazy(() => import('./components/WatchModal').then(m => ({ default: m.WatchModal })));
 const WatchlistDrawer = lazy(() => import('./components/WatchlistDrawer').then(m => ({ default: m.WatchlistDrawer })));
-import { MobileBottomNav } from './components/MobileBottomNav';
-import { Footer } from './components/Footer';
+// Below-the-fold sections are code-split so the initial bundle stays light.
+const HomeScheduleSection = lazy(() => import('./components/HomeScheduleSection').then(m => ({ default: m.HomeScheduleSection })));
+const HomeGenreShowcase = lazy(() => import('./components/HomeGenreShowcase').then(m => ({ default: m.HomeGenreShowcase })));
+const PopularSliderSection = lazy(() => import('./components/PopularSliderSection').then(m => ({ default: m.PopularSliderSection })));
+const OngoingSliderSection = lazy(() => import('./components/OngoingSliderSection').then(m => ({ default: m.OngoingSliderSection })));
+const LatestUpdatedSection = lazy(() => import('./components/LatestUpdatedSection').then(m => ({ default: m.LatestUpdatedSection })));
+const PortalStatsBanner = lazy(() => import('./components/PortalStatsBanner').then(m => ({ default: m.PortalStatsBanner })));
+const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
 import { donghuaApi } from './services/donghuaApi';
 import {
   DonghuaHomeData,
@@ -300,18 +301,21 @@ export function App() {
 
               {/* Genre Filter Results View if Selected: Rich Dynamic In-Home Genre Showcase */}
               {selectedGenre && (
-                <HomeGenreShowcase
-                  selectedGenre={selectedGenre}
-                  genres={homeData?.genres || []}
-                  onSelectGenre={handleSelectGenre}
-                  onSelect={(item) => handleOpenDetail(item.slug)}
-                  onWatch={(item) => handleWatch(item.slug, item.title)}
-                  onToggleBookmark={handleToggleBookmark}
-                  isBookmarked={isBookmarked}
-                />
+                <Suspense fallback={null}>
+                  <HomeGenreShowcase
+                    selectedGenre={selectedGenre}
+                    genres={homeData?.genres || []}
+                    onSelectGenre={handleSelectGenre}
+                    onSelect={(item) => handleOpenDetail(item.slug)}
+                    onWatch={(item) => handleWatch(item.slug, item.title)}
+                    onToggleBookmark={handleToggleBookmark}
+                    isBookmarked={isBookmarked}
+                  />
+                </Suspense>
               )}
 
               {!selectedGenre && (
+                <Suspense fallback={<div className="h-48" />}>
                 <>
                   {/* Continue Watching Section */}
                   <ContinueWatchingSection
@@ -380,6 +384,7 @@ export function App() {
                     totalGenres={homeData?.genres?.length || 26}
                   />
                 </>
+                </Suspense>
               )}
             </div>
           </>
@@ -387,11 +392,13 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <Footer
-        genres={homeData?.genres || []}
-        onSelectGenre={handleSelectGenre}
-        onOpenSchedule={() => setScheduleOpen(true)}
-      />
+      <Suspense fallback={null}>
+        <Footer
+          genres={homeData?.genres || []}
+          onSelectGenre={handleSelectGenre}
+          onOpenSchedule={() => setScheduleOpen(true)}
+        />
+      </Suspense>
 
       {/* Interactive Modals */}
       <Suspense fallback={null}>
