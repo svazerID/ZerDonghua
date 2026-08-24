@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Play, Info, ChevronLeft, ChevronRight, Sparkles, Bookmark, Check } from 'lucide-react';
 import { DonghuaRecommendation, DonghuaCardItem } from '../types';
 
@@ -90,11 +91,13 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
         <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0d1015] border border-[#ffffff1a] shadow-[0_9px_7px_#0000001a]">
           {/* Subtle Ambient Background Lighting */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <img
+            <Image
               src={current.cover}
               alt=""
               aria-hidden="true"
+              fill
               decoding="async"
+              sizes="100vw"
               className="w-full h-full object-cover object-center opacity-25 scale-100 transition-opacity duration-500"
             />
             {/* Smooth dark overlay gradients */}
@@ -170,10 +173,12 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
                   onClick={() => onOpenDetail(current.slug)}
                   className="relative group w-52 xl:w-60 aspect-[3/4] rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
                 >
-                  <img
+                  <Image
                     src={current.cover}
                     alt={current.title}
+                    fill
                     decoding="async"
+                    sizes="240px"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />

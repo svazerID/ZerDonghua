@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Header } from './components/Header';
 import { SpotlightHero } from './components/SpotlightHero';
@@ -27,10 +29,10 @@ import {
 } from './types';
 import { Sparkles, Film, Flame, AlertCircle, RefreshCw } from 'lucide-react';
 
-export function App() {
+export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | null }) {
   // Home Data State
-  const [homeData, setHomeData] = useState<DonghuaHomeData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [homeData, setHomeData] = useState<DonghuaHomeData | null>(initialHomeData ?? null);
+  const [loading, setLoading] = useState<boolean>(!initialHomeData);
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef<boolean>(false);
 
@@ -110,6 +112,7 @@ export function App() {
 
   // Single mount effect ensuring no redundant calls
   useEffect(() => {
+    if (initialHomeData) return; // SSR already provided the data
     let isMounted = true;
     fetchHomeData().catch(() => {
       if (isMounted) {
@@ -119,7 +122,7 @@ export function App() {
     return () => {
       isMounted = false;
     };
-  }, [fetchHomeData]);
+  }, [fetchHomeData, initialHomeData]);
 
   // Handle Genre selection & scraping
   const handleSelectGenre = (genreSlug: string | null) => {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Bookmark, History, Trash2, Play, X, Clock } from 'lucide-react';
 import { BookmarkEntry, WatchHistoryEntry } from '../types';
 
@@ -105,11 +106,13 @@ export const WatchlistDrawer: React.FC<WatchlistDrawerProps> = ({
                     >
                       {item.cover && (
                         <div className="relative w-12 h-16 rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                          <img
+                          <Image
                             src={item.cover}
                             alt={item.title}
+                            fill
                             loading="lazy"
                             decoding="async"
+                            sizes="48px"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -178,11 +181,13 @@ export const WatchlistDrawer: React.FC<WatchlistDrawerProps> = ({
                       <div className="flex items-center gap-3 min-w-0">
                         {item.cover && (
                           <div className="relative w-12 h-16 rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                            <img
+                            <Image
                               src={item.cover}
                               alt={item.title}
+                              fill
                               loading="lazy"
                               decoding="async"
+                              sizes="48px"
                               className="w-full h-full object-cover"
                             />
                           </div>

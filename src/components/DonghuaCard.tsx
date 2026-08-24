@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Play, Flame, Bookmark, Check } from 'lucide-react';
 import { DonghuaCardItem } from '../types';
 
@@ -26,11 +27,13 @@ export const DonghuaCard: React.FC<DonghuaCardProps> = ({
     >
       {/* Poster Media Box */}
       <div className="relative aspect-[3/4] w-full rounded-lg sm:rounded-xl overflow-hidden bg-[#06060b] border border-[#ffffff1a]">
-        <img
+        <Image
           src={item.cover}
           alt={item.title}
+          fill
           loading="lazy"
           decoding="async"
+          sizes="(max-width: 640px) 45vw, 200px"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 

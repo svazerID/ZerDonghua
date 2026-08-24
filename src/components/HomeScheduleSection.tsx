@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Calendar, Clock, Play, Info, ChevronLeft, ChevronRight, CheckCircle2, Flame, Rows, LayoutGrid } from 'lucide-react';
 import { donghuaApi } from '../services/donghuaApi';
 import { DonghuaScheduleItem, DonghuaCardItem } from '../types';
@@ -190,11 +191,13 @@ export const HomeScheduleSection: React.FC<HomeScheduleSectionProps> = ({
               <div className="flex gap-3">
                 {/* Poster image */}
                 <div className="relative w-20 sm:w-22 aspect-[3/4] rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                  <img
+                  <Image
                     src={item.cover}
                     alt={item.title}
+                    fill
                     loading="lazy"
                     decoding="async"
+                    sizes="80px"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   {item.episode && (
@@ -259,11 +262,13 @@ export const HomeScheduleSection: React.FC<HomeScheduleSectionProps> = ({
             >
               <div className="flex gap-3">
                 <div className="relative w-20 aspect-[3/4] rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                  <img
+                  <Image
                     src={item.cover}
                     alt={item.title}
+                    fill
                     loading="lazy"
                     decoding="async"
+                    sizes="80px"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   {item.episode && (

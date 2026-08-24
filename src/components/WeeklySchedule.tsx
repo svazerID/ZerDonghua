@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Calendar, Clock, X, Play, Info } from 'lucide-react';
 import { donghuaApi } from '../services/donghuaApi';
 import { DonghuaScheduleItem } from '../types';
@@ -111,11 +112,13 @@ export const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
                   <div className="flex items-center gap-3 min-w-0">
                     {item.cover && (
                       <div className="relative w-12 h-16 rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                        <img
+                        <Image
                           src={item.cover}
                           alt={item.title}
+                          fill
                           loading="lazy"
                           decoding="async"
+                          sizes="48px"
                           className="w-full h-full object-cover"
                         />
                       </div>

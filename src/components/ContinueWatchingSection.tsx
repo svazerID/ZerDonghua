@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { History, Play, Trash2, Clock } from 'lucide-react';
 import { WatchHistoryEntry } from '../types';
 
@@ -51,11 +52,13 @@ export const ContinueWatchingSection: React.FC<ContinueWatchingSectionProps> = (
             <div className="flex items-center gap-3 min-w-0">
               {item.cover && (
                 <div className="relative w-12 h-16 rounded-xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                  <img
+                  <Image
                     src={item.cover}
                     alt={item.title}
+                    fill
                     loading="lazy"
                     decoding="async"
+                    sizes="48px"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

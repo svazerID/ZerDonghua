@@ -17,6 +17,42 @@
     --border-subtle: #ffffff1a;
     --border-elevated: #ffffff26;
   }
+
+  html,
+  body {
+    background-color: #06060b;
+    color: #ffffff;
+  }
+
+  body {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #06060b;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #0d1015;
+    border: 1px solid #ffffff1a;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+  }
 }
 
 /* Custom Design System Utility Classes */

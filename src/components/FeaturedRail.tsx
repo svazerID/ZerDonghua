@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import Image from 'next/image';
 import { Sparkles, Play, Bookmark, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DonghuaRecommendation, DonghuaCardItem, MAX_VISIBLE_CARDS } from '../types';
 
@@ -93,11 +94,13 @@ export const FeaturedRail: React.FC<FeaturedRailProps> = ({
             >
               {/* Cover Image */}
               <div className="relative w-24 sm:w-28 aspect-[3/4] rounded-2xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">
-                <img
+                <Image
                   src={item.cover}
                   alt={item.title}
+                  fill
                   loading="lazy"
                   decoding="async"
+                  sizes="(max-width: 640px) 96px, 112px"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] text-white shadow">

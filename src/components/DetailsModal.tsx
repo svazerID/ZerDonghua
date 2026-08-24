@@ -10,6 +10,7 @@ import {
   ExternalLink,
   ChevronRight
 } from 'lucide-react';
+import Image from 'next/image';
 import { DonghuaDetail, DonghuaCardItem } from '../types';
 import { donghuaApi } from '../services/donghuaApi';
 
@@ -100,11 +101,13 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
             {/* Top Banner / Backdrop Area */}
             <div className="relative h-36 sm:h-64 w-full overflow-hidden bg-[#06060b]">
               {detail.cover && (
-                <img
+                <Image
                   src={detail.cover}
                   alt={detail.title}
+                  fill
                   loading="lazy"
                   decoding="async"
+                  sizes="100vw"
                   className="w-full h-full object-cover blur-sm opacity-50 scale-105"
                 />
               )}
@@ -137,11 +140,13 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
               <div className="flex flex-row gap-3.5 sm:gap-6 items-start">
                 {detail.cover && (
                   <div className="relative w-24 sm:w-40 aspect-[3/4] rounded-2xl overflow-hidden shadow-[0_24px_50px_-12px_#000000bf] border border-[#ffffff1a] shrink-0 -mt-12 sm:-mt-16 bg-[#06060b] z-10">
-                    <img
+                    <Image
                       src={detail.cover}
                       alt={detail.title}
+                      fill
                       loading="lazy"
                       decoding="async"
+                      sizes="160px"
                       className="w-full h-full object-cover"
                     />
                   </div>

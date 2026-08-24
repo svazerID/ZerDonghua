@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface ZerDonghuaLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -42,10 +43,12 @@ export const ZerDonghuaLogo: React.FC<ZerDonghuaLogoProps> = ({
       >
         {/* Background dark shield with subtle radial gradient */}
         <div className="w-full h-full bg-[#0a0c10] rounded-[14px] flex items-center justify-center overflow-hidden relative">
-          <img
+          <Image
             src="/icon.png"
             alt="ZerDonghua"
+            fill
             decoding="async"
+            sizes="64px"
             className="w-full h-full object-contain p-1.5 relative z-10"
           />
         </div>
