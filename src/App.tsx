@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 
 import { Header } from './components/Header';
 import { SpotlightHero } from './components/SpotlightHero';
 import { GenreBar } from './components/GenreBar';
-import { GenreExploreSection } from './components/GenreExploreSection';
 import { FeaturedRail } from './components/FeaturedRail';
 import { ContinueWatchingSection } from './components/ContinueWatchingSection';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -41,6 +40,9 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [genreResults, setGenreResults] = useState<DonghuaCardItem[] | null>(null);
   const [genreLoading, setGenreLoading] = useState<boolean>(false);
+
+  // Active genre of the standalone "Jelajahi Genre" showcase section
+  const [exploreGenre, setExploreGenre] = useState<string>('action');
 
   // Modals & Navigation State
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
@@ -378,12 +380,19 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
                     />
                   )}
 
-                  {/* Explore by Genre Tiles */}
-                  {homeData?.genres && homeData.genres.length > 0 && (
-                    <GenreExploreSection
-                      genres={homeData.genres}
-                      onSelectGenre={handleSelectGenre}
-                    />
+                  {/* Jelajahi per Genre — slider kartu + panah prev/next */}
+                  {homeData && (
+                    <Suspense fallback={<div className="h-48" />}>
+                      <HomeGenreShowcase
+                        selectedGenre={exploreGenre}
+                        genres={homeData.genres || []}
+                        onSelectGenre={setExploreGenre}
+                        onSelect={(item) => handleOpenDetail(item.slug)}
+                        onWatch={(item) => handleWatch(item.slug, item.title)}
+                        onToggleBookmark={handleToggleBookmark}
+                        isBookmarked={isBookmarked}
+                      />
+                    </Suspense>
                   )}
 
                   {/* Portal Status & Quality Features Banner */}
