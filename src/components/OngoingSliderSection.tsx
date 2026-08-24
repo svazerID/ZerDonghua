@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Radio, Play, ChevronLeft, ChevronRight, Rows, LayoutGrid, Sparkles, Flame, Eye } from 'lucide-react';
-import { DonghuaCardItem } from '../types';
+import { DonghuaCardItem, MAX_VISIBLE_CARDS } from '../types';
 import { DonghuaCard } from './DonghuaCard';
 
 interface OngoingSliderSectionProps {
@@ -22,6 +22,8 @@ export const OngoingSliderSection: React.FC<OngoingSliderSectionProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null);
 
   if (!donghuaBaru || donghuaBaru.length === 0) return null;
+
+  const visible = donghuaBaru.slice(0, MAX_VISIBLE_CARDS);
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -107,7 +109,7 @@ export const OngoingSliderSection: React.FC<OngoingSliderSectionProps> = ({
           className="flex items-stretch gap-2.5 sm:gap-4 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {donghuaBaru.map((item, index) => {
+          {visible.map((item, index) => {
             const cardItem: DonghuaCardItem = {
               title: item.title,
               slug: item.slug,
@@ -138,7 +140,7 @@ export const OngoingSliderSection: React.FC<OngoingSliderSectionProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
-          {donghuaBaru.map((item, index) => {
+          {visible.map((item, index) => {
             const cardItem: DonghuaCardItem = {
               title: item.title,
               slug: item.slug,

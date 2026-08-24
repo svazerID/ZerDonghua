@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Film, Search, Flame, Rows, LayoutGrid, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DonghuaCardItem } from '../types';
+import { DonghuaCardItem, MAX_VISIBLE_CARDS } from '../types';
 import { DonghuaCard } from './DonghuaCard';
 
 interface LatestUpdatedSectionProps {
@@ -37,6 +37,8 @@ export const LatestUpdatedSection: React.FC<LatestUpdatedSectionProps> = ({
     if (filter === 'sub') return item.subStatus?.toLowerCase().includes('sub');
     return true;
   });
+
+  const visibleList = filteredList.slice(0, MAX_VISIBLE_CARDS);
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -173,7 +175,7 @@ export const LatestUpdatedSection: React.FC<LatestUpdatedSectionProps> = ({
               className="flex items-stretch gap-2.5 sm:gap-4 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {filteredList.map((item, index) => (
+              {visibleList.map((item, index) => (
                 <div
                   key={item.slug || `${item.title}-${index}`}
                   className="w-[140px] xs:w-[160px] sm:w-[185px] md:w-[200px] shrink-0 snap-start"
@@ -190,7 +192,7 @@ export const LatestUpdatedSection: React.FC<LatestUpdatedSectionProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
-              {filteredList.map((item, index) => (
+              {visibleList.map((item, index) => (
                 <DonghuaCard
                   key={item.slug || `${item.title}-${index}`}
                   item={item}

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Sparkles, Play, Bookmark, Check, ChevronLeft, ChevronRight } from 'lucide-react';
-import { DonghuaRecommendation, DonghuaCardItem } from '../types';
+import { DonghuaRecommendation, DonghuaCardItem, MAX_VISIBLE_CARDS } from '../types';
 
 interface FeaturedRailProps {
   recommendations: DonghuaRecommendation[];
@@ -74,7 +74,7 @@ export const FeaturedRail: React.FC<FeaturedRailProps> = ({
         className="flex items-stretch gap-4 overflow-x-auto pb-3 scroll-smooth no-scrollbar snap-x snap-mandatory"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {recommendations.map((item, idx) => {
+        {recommendations.slice(0, MAX_VISIBLE_CARDS).map((item, idx) => {
           const bookmarked = isBookmarked(item.slug);
           const cardItem: DonghuaCardItem = {
             title: item.title,
@@ -89,7 +89,7 @@ export const FeaturedRail: React.FC<FeaturedRailProps> = ({
             <div
               key={item.slug || idx}
               onClick={() => onSelect(item.slug)}
-              className="w-[290px] sm:w-[340px] md:w-[380px] shrink-0 snap-start group relative rounded-3xl bg-[#0d1015] border border-[#ffffff1a] hover:border-[#a78bfa66] p-4 transition-all duration-300 backdrop-blur-xl shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] flex gap-3.5 cursor-pointer overflow-hidden"
+              className="w-[290px] sm:w-[340px] md:w-[380px] shrink-0 snap-start group relative rounded-3xl bg-[#0d1015] border border-[#ffffff1a] hover:border-[#a78bfa66] p-4 transition-all duration-300 shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] flex gap-3.5 cursor-pointer overflow-hidden"
             >
               {/* Cover Image */}
               <div className="relative w-24 sm:w-28 aspect-[3/4] rounded-2xl overflow-hidden shrink-0 bg-[#06060b] border border-[#ffffff1a]">

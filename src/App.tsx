@@ -234,12 +234,8 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-[#050508] text-white flex flex-col selection:bg-violet-600 selection:text-white relative">
-      {/* Background Ambient Glows */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute -top-40 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-10 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl" />
-      </div>
+      {/* Background Ambient Glows (static gradients — no blur filter, cheap to repaint) */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(40%_35%_at_25%_0%,rgba(124,58,237,0.12),transparent),radial-gradient(35%_30%_at_100%_35%,rgba(79,70,229,0.10),transparent),radial-gradient(30%_25%_at_10%_80%,rgba(168,85,247,0.08),transparent)]" />
 
       {/* Main Header */}
       <Header

@@ -1,3 +1,7 @@
+// Cap rendered cards per rail so the homepage doesn't mount hundreds of
+// poster images / DOM nodes at once (keeps scroll and memory light on mobile).
+export const MAX_VISIBLE_CARDS = 30;
+
 export interface DonghuaRecommendation {
   title: string;
   link: string;

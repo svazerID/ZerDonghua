@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Flame, Trophy, Star, Crown, TrendingUp, ChevronLeft, ChevronRight, LayoutGrid, Rows } from 'lucide-react';
-import { DonghuaCardItem } from '../types';
+import { DonghuaCardItem, MAX_VISIBLE_CARDS } from '../types';
 import { DonghuaCard } from './DonghuaCard';
 
 interface PopularSliderSectionProps {
@@ -41,6 +41,8 @@ export const PopularSliderSection: React.FC<PopularSliderSectionProps> = ({
     activeList = donghuaPopular.allTime;
     sectionSubtitle = 'Donghua legendaris dengan penonton terbanyak sepanjang masa';
   }
+
+  const visibleList = activeList.slice(0, MAX_VISIBLE_CARDS);
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -177,7 +179,7 @@ export const PopularSliderSection: React.FC<PopularSliderSectionProps> = ({
           className="flex items-stretch gap-2.5 sm:gap-4 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {activeList.map((item, index) => (
+          {visibleList.map((item, index) => (
             <div
               key={item.slug || `${item.title}-${index}`}
               className="w-[140px] xs:w-[160px] sm:w-[190px] md:w-[210px] shrink-0 snap-start"
@@ -195,7 +197,7 @@ export const PopularSliderSection: React.FC<PopularSliderSectionProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
-          {activeList.map((item, index) => (
+          {visibleList.map((item, index) => (
             <DonghuaCard
               key={item.slug || `${item.title}-${index}`}
               item={item}
