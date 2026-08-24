@@ -88,7 +88,7 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6">
         {/* Lightweight Modern Hero Banner Container */}
-        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0d1015] border border-[#ffffff1a] shadow-[0_9px_7px_#0000001a]">
+        <div className="relative flex items-end min-h-[420px] sm:min-h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0d1015] border border-[#ffffff1a] shadow-[0_9px_7px_#0000001a]">
           {/* Subtle Ambient Background Lighting */}
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
             <Image
@@ -98,16 +98,16 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
               fill
               decoding="async"
               sizes="100vw"
-              className="w-full h-full object-cover object-center opacity-25 scale-100 transition-opacity duration-500"
+              className="w-full h-full object-cover object-center opacity-60 sm:opacity-45 lg:opacity-25 transition-opacity duration-500"
             />
             {/* Smooth dark overlay gradients */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1015] via-[#0d1015]/85 to-[#0d1015]/60" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0d1015] via-[#0d1015]/90 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1015] via-[#0d1015]/55 to-transparent sm:via-[#0d1015]/85 sm:to-[#0d1015]/60" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0d1015]/75 via-[#0d1015]/35 to-transparent sm:from-[#0d1015] sm:via-[#0d1015]/90" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#7c3aed]/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           {/* Banner Content */}
-          <div className="relative z-10 p-4 sm:p-8 md:p-10">
+          <div className="relative z-10 w-full p-4 sm:p-8 md:p-10">
             <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
               {/* Left Column: Information & Actions */}
               <div className="flex-1 min-w-0 space-y-3 sm:space-y-4">
@@ -167,8 +167,8 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
                 </div>
               </div>
 
-              {/* Right Column: Compact Poster Preview */}
-              <div className="shrink-0">
+              {/* Right Column: Compact Poster Preview (desktop only — mobile uses the full-bleed artwork) */}
+              <div className="hidden sm:block shrink-0">
                 <div
                   onClick={() => onOpenDetail(current.slug)}
                   className="relative group w-20 sm:w-40 lg:w-52 xl:w-60 aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden border border-[#ffffff1a] hover:border-[#a78bfa66] shadow-[0_9px_7px_#0000001a] hover:shadow-[0_24px_50px_-12px_#000000bf] bg-[#0a0c10] cursor-pointer transition-all duration-300"
