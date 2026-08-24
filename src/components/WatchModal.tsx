@@ -279,6 +279,25 @@ export const WatchModal: React.FC<WatchModalProps> = ({
                   {allMirrors.length - playableMirrors.length} server sedang tidak tersedia.
                 </p>
               )}
+              <p className="text-[10px] sm:text-[11px] text-slate-500 flex items-start gap-1.5 leading-relaxed">
+                <Info className="w-3 h-3 mt-0.5 shrink-0 text-[#a78bfa]" />
+                <span>
+                  Jika video tidak bisa diputar atau error, silakan ganti server di atas atau klik
+                  {currentMirror?.streamUrl ? (
+                    <a
+                      href={currentMirror.streamUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#a78bfa] hover:text-white font-semibold hover:underline"
+                    >
+                      {' '}Tab Baru
+                    </a>
+                  ) : (
+                    ' Tab Baru'
+                  )}
+                  .
+                </span>
+              </p>
             </div>
           )}
 

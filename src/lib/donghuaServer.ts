@@ -235,6 +235,19 @@ export async function getDonghua(
           streamUrl = streamUrl.replace(/&amp;/g, '&');
           return { ...m, streamUrl };
         });
+
+        // Preferred server order: Dtube (lightest) first, then OKRU, then Dailymotion.
+        // Dtube becomes the default selected mirror in the watch modal.
+        const SERVER_ORDER = ['dtube', 'okru', 'dailymotion'];
+        result.mirrors.sort((a: any, b: any) => {
+          const rank = (m: any) => {
+            const idx = SERVER_ORDER.findIndex((k) =>
+              (m.name || '').toLowerCase().includes(k)
+            );
+            return idx === -1 ? SERVER_ORDER.length : idx;
+          };
+          return rank(a) - rank(b);
+        });
       }
       break;
     }
