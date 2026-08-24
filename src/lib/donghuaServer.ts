@@ -233,6 +233,17 @@ export async function getDonghua(
             if (srcMatch) streamUrl = srcMatch[1];
           }
           streamUrl = streamUrl.replace(/&amp;/g, '&');
+          // Normalize all Dailymotion forms (embed URLs, dai.ly shorts, and
+          // custom partner players like geo.dailymotion.com/player/xhojl.html)
+          // to the standard /embed/video/ URL. Custom players are domain-locked
+          // to the source site and refuse playback elsewhere.
+          const dmId =
+            streamUrl.match(/dailymotion\.com\/(?:embed\/)?video\/([A-Za-z0-9]+)/i)?.[1] ||
+            streamUrl.match(/[?&]video=([A-Za-z0-9]+)/i)?.[1] ||
+            streamUrl.match(/dai\.ly\/([A-Za-z0-9]+)/i)?.[1];
+          if (dmId && /dailymotion|dai\.ly/i.test(streamUrl)) {
+            streamUrl = `https://www.dailymotion.com/embed/video/${dmId}`;
+          }
           return { ...m, streamUrl };
         });
 
