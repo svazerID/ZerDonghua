@@ -15,6 +15,7 @@ const WatchlistDrawer = lazy(() => import('./components/WatchlistDrawer').then(m
 // Below-the-fold sections are code-split so the initial bundle stays light.
 const HomeScheduleSection = lazy(() => import('./components/HomeScheduleSection').then(m => ({ default: m.HomeScheduleSection })));
 const HomeGenreShowcase = lazy(() => import('./components/HomeGenreShowcase').then(m => ({ default: m.HomeGenreShowcase })));
+const GenreRailSection = lazy(() => import('./components/GenreRailSection').then(m => ({ default: m.GenreRailSection })));
 const PopularSliderSection = lazy(() => import('./components/PopularSliderSection').then(m => ({ default: m.PopularSliderSection })));
 const OngoingSliderSection = lazy(() => import('./components/OngoingSliderSection').then(m => ({ default: m.OngoingSliderSection })));
 const LatestUpdatedSection = lazy(() => import('./components/LatestUpdatedSection').then(m => ({ default: m.LatestUpdatedSection })));
@@ -40,9 +41,6 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [genreResults, setGenreResults] = useState<DonghuaCardItem[] | null>(null);
   const [genreLoading, setGenreLoading] = useState<boolean>(false);
-
-  // Active genre of the standalone "Jelajahi Genre" showcase section
-  const [exploreGenre, setExploreGenre] = useState<string>('action');
 
   // Modals & Navigation State
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
@@ -380,20 +378,18 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
                     />
                   )}
 
-                  {/* Jelajahi per Genre — slider kartu + panah prev/next */}
-                  {homeData && (
-                    <Suspense fallback={<div className="h-48" />}>
-                      <HomeGenreShowcase
-                        selectedGenre={exploreGenre}
-                        genres={homeData.genres || []}
-                        onSelectGenre={setExploreGenre}
+                  {/* Rail terpisah per genre — slider kartu + panah prev/next */}
+                  {['action', 'cultivation', 'fantasy', 'martial-arts'].map((slug) => (
+                    <Suspense key={slug} fallback={<div className="h-48" />}>
+                      <GenreRailSection
+                        genreSlug={slug}
                         onSelect={(item) => handleOpenDetail(item.slug)}
                         onWatch={(item) => handleWatch(item.slug, item.title)}
                         onToggleBookmark={handleToggleBookmark}
                         isBookmarked={isBookmarked}
                       />
                     </Suspense>
-                  )}
+                  ))}
 
                   {/* Portal Status & Quality Features Banner */}
                   <PortalStatsBanner
