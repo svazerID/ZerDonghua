@@ -224,11 +224,15 @@ export async function getDonghua(
 
       if (result && result.mirrors && Array.isArray(result.mirrors)) {
         result.mirrors = result.mirrors.map((m: any) => {
-          let streamUrl = m.streamUrl;
-          if (!streamUrl && m.embedCode) {
+          let streamUrl = m.streamUrl || '';
+          // The embed snippet carries the authoritative, complete URL. The API's
+          // streamUrl is sometimes truncated (e.g. Dailymotion video id cut off)
+          // and HTML-entity encoded (&amp;), which breaks when set as iframe.src.
+          if (m.embedCode) {
             const srcMatch = m.embedCode.match(/src=["']([^"']+)["']/i);
             if (srcMatch) streamUrl = srcMatch[1];
           }
+          streamUrl = streamUrl.replace(/&amp;/g, '&');
           return { ...m, streamUrl };
         });
       }
