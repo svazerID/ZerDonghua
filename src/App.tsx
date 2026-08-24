@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 
 import { Header } from './components/Header';
 import { SpotlightHero } from './components/SpotlightHero';
 import { GenreBar } from './components/GenreBar';
+import { GenreExploreSection } from './components/GenreExploreSection';
 import { FeaturedRail } from './components/FeaturedRail';
 import { ContinueWatchingSection } from './components/ContinueWatchingSection';
 import { MobileBottomNav } from './components/MobileBottomNav';
@@ -374,6 +375,14 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
                       onWatch={handleWatch}
                       onToggleBookmark={handleToggleBookmark}
                       isBookmarked={isBookmarked}
+                    />
+                  )}
+
+                  {/* Explore by Genre Tiles */}
+                  {homeData?.genres && homeData.genres.length > 0 && (
+                    <GenreExploreSection
+                      genres={homeData.genres}
+                      onSelectGenre={handleSelectGenre}
                     />
                   )}
 
