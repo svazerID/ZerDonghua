@@ -5,9 +5,13 @@
 // streamUrl is sometimes truncated (e.g. Dailymotion video id cut off)
 // and HTML-entity encoded (&amp;), which breaks when set as iframe.src.
 //
-// Dailymotion URLs are additionally canonicalized to /embed/video/<id>: the
-// source's geo.dailymotion.com/player.html form carries partner params we do
-// not need, and the canonical form redirects to the same player.
+// Dailymotion URLs are normalized to the source's geo player form,
+// geo.dailymotion.com/player/xid0t.html?video=<id> (xid0t is the player id
+// anichin serves for every episode). The old canonical form,
+// www.dailymotion.com/embed/video/<id>, must NOT be used: verified
+// 2026-10-31, it renders a black "Forbidden" frame for these videos, while
+// the geo xid0t player loads its UI. Referer spoofing does not rescue the
+// www form (403 with an anichin referer too).
 
 export interface MirrorLike {
   name?: string;
@@ -35,7 +39,7 @@ export function normalizeMirrors<T extends MirrorLike>(mirrors: T[]): T[] {
       streamUrl.match(/[?&]video=([A-Za-z0-9]+)/i)?.[1] ||
       streamUrl.match(/dai\.ly\/([A-Za-z0-9]+)/i)?.[1];
     if (dmId && /dailymotion|dai\.ly/i.test(streamUrl)) {
-      streamUrl = `https://www.dailymotion.com/embed/video/${dmId}`;
+      streamUrl = `https://geo.dailymotion.com/player/xid0t.html?video=${dmId}`;
     }
 
     return { ...m, streamUrl };

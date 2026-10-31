@@ -13,14 +13,21 @@ test('embed src menang atas streamUrl yang terpotong, entity di-decode', () => {
         '<iframe src="https://geo.dailymotion.com/player.html?autoplay=0&amp;video=k6buWuR4fzrDEdIVRL0"></iframe>',
     },
   ]);
-  assert.equal(m.streamUrl, 'https://www.dailymotion.com/embed/video/k6buWuR4fzrDEdIVRL0');
+  assert.equal(m.streamUrl, 'https://geo.dailymotion.com/player/xid0t.html?video=k6buWuR4fzrDEdIVRL0');
 });
 
-test('partner player xid dikanonikalkan ke /embed/video', () => {
+test('player geo xid0t dipertahankan, bukan dikanonikalkan ke /embed/video', () => {
   const [m] = normalizeMirrors([
     { name: 'Dailymotion', streamUrl: 'https://geo.dailymotion.com/player/xid0t.html?video=k5RNIHP1L0RBVjF06Vq' },
   ]);
-  assert.equal(m.streamUrl, 'https://www.dailymotion.com/embed/video/k5RNIHP1L0RBVjF06Vq');
+  assert.equal(m.streamUrl, 'https://geo.dailymotion.com/player/xid0t.html?video=k5RNIHP1L0RBVjF06Vq');
+});
+
+test('embed www dailymotion ditulis ulang ke player geo xid0t (www kena Forbidden)', () => {
+  const [m] = normalizeMirrors([
+    { name: 'Dailymotion', streamUrl: 'https://www.dailymotion.com/embed/video/k3uwIc6cJbu3KvLSFzY' },
+  ]);
+  assert.equal(m.streamUrl, 'https://geo.dailymotion.com/player/xid0t.html?video=k3uwIc6cJbu3KvLSFzY');
 });
 
 test('mirror non-Dailymotion tidak disentuh', () => {
