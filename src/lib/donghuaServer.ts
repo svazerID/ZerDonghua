@@ -20,7 +20,10 @@ function normalizeAnichinCard(item: any): any {
   // repeated phrase at the start — the old /(.+?)\s*\1/ also ate "177"->"17"
   // and "Good"->"God" anywhere in the title.
   const rawTitle = (item.title || '').replace(/^(.+?)\s+\1\s*/, '$1 ').trim();
-  const rawSlug = (item.slug as string) || link.replace(/^https?:\/\/[^/]+\/(?:seri\/)?/, '').replace(/\/+$/, '');
+  // anichin.my series pages live under /series/<slug>/, but a slug must be
+  // bare: detail builds /seri/<slug>/ (which redirects to /series/<slug>/),
+  // and /seri/series/<slug>/ 404s into the fake fallback detail. Strip it.
+  const rawSlug = stripSeriesPrefix((item.slug as string) || link.replace(/^https?:\/\/[^/]+\/(?:seri\/|series\/)?/, '').replace(/\/+$/, ''));
   // Slug must resolve to the SERIES detail page (strip episode/suffix), so
   // open-detail → /api/donghua?action=detail works. Episode slug preserved
   // separately for direct episode link/watch if the frontend needs it.
@@ -104,7 +107,7 @@ function normalizeAnichinSchedule(data: Record<string, any[]>): Record<string, a
     out[day] = (items || []).map((item: any) => {
       const link = item.url || item.link || '';
       const cover = item.thumbnail || item.cover || '';
-      const slug = (item.slug as string) || link.replace(/^https?:\/\/[^/]+\/(?:seri\/)?/, '').replace(/\/+$/, '');
+      const slug = stripSeriesPrefix((item.slug as string) || link.replace(/^https?:\/\/[^/]+\/(?:seri\/|series\/)?/, '').replace(/\/+$/, ''));
       return {
         ...item,
         link,
@@ -144,8 +147,12 @@ async function getCachedGenres(): Promise<any> {
   }
   return cachedGenres;
 }
+function stripSeriesPrefix(slug: string): string {
+  return slug.replace(/^(?:seri\/|series\/)/, '');
+}
+
 function toSlug(slugOrUrl: string): string {
-  return slugOrUrl.replace(/^https?:\/\/[^/]+\/(?:seri\/)?/, '').replace(/\/+$/, '');
+  return stripSeriesPrefix(slugOrUrl.replace(/^https?:\/\/[^/]+\/(?:seri\/|series\/)?/, '').replace(/\/+$/, ''));
 }
 
 function toSeriesSlug(slug: string): string {
@@ -229,7 +236,14 @@ export async function getDonghua(
             result = await anichin.getAnichinStream(`${seriesSlug}-episode-${cleanSlug.match(/episode-(\d+)/i)?.[1] || 1}-subtitle-indonesia`);
             if (!result.mirrors || result.mirrors.length === 0) throw new Error('anichin stream empty');
           } else {
-            throw new Error('Cannot resolve series from episode slug');
+            // Play pressed on a series card (e.g. from search): a series slug
+            // has no player itself, so stream its newest episode instead of
+            // falling back to the fake static mirrors.
+            const detail = await anichin.getAnichinDetail(cleanSlug);
+            const firstEp = (detail.episodes || [])[0];
+            if (!firstEp?.url) throw new Error('Cannot resolve series from episode slug');
+            result = await anichin.getAnichinStream(firstEp.url);
+            if (!result.mirrors || result.mirrors.length === 0) throw new Error('anichin stream empty');
           }
         } catch (resolveErr) {
           console.warn('Could not resolve episode, using fallback:', resolveErr);
@@ -250,7 +264,13 @@ export async function getDonghua(
       const page = String(query.page || 1);
       if (!queryStr) throw new Error('Parameter query diperlukan untuk action search');
       try {
-        const anichinResult = await anichin.getAnichinSearch(queryStr, Number(page));
+        // The search modal's own placeholder suggests "BTTH", but upstream
+        // WordPress search matches titles, not that abbreviation — it returns
+        // 0 results. Expand the one abbreviation users are told to try.
+        const effectiveQuery = queryStr.toLowerCase().trim() === 'btth'
+          ? 'Battle Through the Heavens'
+          : queryStr;
+        const anichinResult = await anichin.getAnichinSearch(effectiveQuery, Number(page));
         result = normalizeAnichinSearch(anichinResult);
         if (!result.results || result.results.length === 0) {
           throw new Error('anichin search empty');

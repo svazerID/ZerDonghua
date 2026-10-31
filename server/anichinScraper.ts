@@ -201,9 +201,12 @@ export class AnichinScraper extends DonghubScraper {
     if (!urlOrSlug) {
       throw new Error('URL atau slug diperlukan');
     }
+    // Slugs may arrive as "series/<slug>" (anichin.my series URLs) — strip
+    // that prefix, otherwise /seri/series/<slug>/ 404s into fallback data.
+    const bareSlug = urlOrSlug.replace(/^https?:\/\/[^/]+\//, '').replace(/^(?:seri\/|series\/)/, '').replace(/^\/+|\/+$/g, '');
     const cleanUrl = urlOrSlug.startsWith('http')
       ? urlOrSlug.trim()
-      : `${BASE_URL}/seri/${urlOrSlug.replace(/^\/+|\/+$/g, '')}/`;
+      : `${BASE_URL}/seri/${bareSlug}/`;
 
     const html = await this.fetchAnichinHtml(cleanUrl);
     const $ = cheerio.load(html);

@@ -186,7 +186,7 @@ export const donghuaApi = {
   },
 
   async getDetail(slug: string): Promise<DonghuaDetail> {
-    const cleanSlug = slug.replace(/^https?:\/\/[^\/]+\//, '').replace(/\/+$/, '');
+    const cleanSlug = slug.replace(/^https?:\/\/[^\/]+\//, '').replace(/^(?:seri\/|series\/)/, '').replace(/\/+$/, '');
     return fetchWithDeduplication(
       `donghua_detail_${cleanSlug}`,
       async () => {
@@ -197,7 +197,7 @@ export const donghuaApi = {
   },
 
   async getEpisode(slug: string): Promise<DonghuaStreamData> {
-    const cleanSlug = slug.replace(/^https?:\/\/[^\/]+\//, '').replace(/\/+$/, '');
+    const cleanSlug = slug.replace(/^https?:\/\/[^\/]+\//, '').replace(/^(?:seri\/|series\/)/, '').replace(/\/+$/, '');
     return fetchWithDeduplication(
       `donghua_episode_${cleanSlug}`,
       async () => {
