@@ -9,7 +9,7 @@ export interface AnichinHome {
   leaderboard: { weekly: any[]; monthly: any[]; alltime: any[] };
 }
 
-const BASE_URL = 'https://anichin.cafe';
+const BASE_URL = 'https://anichin.my';
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
@@ -33,7 +33,7 @@ export class AnichinScraper extends DonghubScraper {
       'User-Agent': USER_AGENT,
       Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-      Referer: 'https://anichin.cafe/',
+      Referer: 'https://anichin.my/',
     };
   }
 
@@ -79,7 +79,7 @@ export class AnichinScraper extends DonghubScraper {
     // main release list to avoid a 5-item cap, then de-duplicate against the
     // Latest Release list so the Popular rail stays a distinct set.
     const latestSlugs: string[] = [];
-    $('.releases:contains("Latest Release")')
+    $('.releases:contains("Latest Release"), .releases:contains("Rilisan Terbaru")')
       .closest('.bixbox')
       .find('.bsx')
       .each((_, el) => {
@@ -94,7 +94,7 @@ export class AnichinScraper extends DonghubScraper {
     });
 
     const latest: any[] = [];
-    $('.releases:contains("Latest Release")')
+    $('.releases:contains("Latest Release"), .releases:contains("Rilisan Terbaru")')
       .closest('.bixbox')
       .find('.bsx')
       .each((_, el) => {
@@ -103,7 +103,7 @@ export class AnichinScraper extends DonghubScraper {
       });
 
     const recommendation: any[] = [];
-    $('.releases:contains("Recommendation")')
+    $('.releases:contains("Recommendation"), .releases:contains("Rekomendasi")')
       .closest('.bixbox')
       .find('.bsx')
       .each((_, el) => {
@@ -402,10 +402,15 @@ export class AnichinScraper extends DonghubScraper {
   async getAnichinGenres(): Promise<any[]> {
     const html = await this.fetchAnichinHtml(`${BASE_URL}/`);
     const $ = cheerio.load(html);
+    // anichin.my has no ul.genre list; genre links live in the sidebar/footer
+    // (repeated), so collect distinct /genres/ links instead.
     const genres: any[] = [];
-    $('ul.genre li a').each((_, el) => {
+    const seen = new Set<string>();
+    $('a[href*="/genres/"]').each((_, el) => {
       const name = $(el).text().trim();
       const link = $(el).attr('href') || '';
+      if (!name || !link || seen.has(link)) return;
+      seen.add(link);
       genres.push({ name, link, slug: this.getSlug(link) });
     });
     return genres;
@@ -425,7 +430,7 @@ export class AnichinScraper extends DonghubScraper {
         const totalPages = $('.pagination a')
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter((t) => /^\\d+$/.test(t))
+          .filter((t) => /^\d+$/.test(t))
           .reduce((max, t) => Math.max(max, Number(t)), Number(page));
         return { results, pagination: { currentPage: Number(page), totalPages, hasNextPage: totalPages > Number(page) } };
       }

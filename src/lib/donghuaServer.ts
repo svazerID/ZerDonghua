@@ -15,7 +15,11 @@ function normalizeAnichinCard(item: any): any {
   if (!item) return item;
   const link = item.url || item.link || '';
   const cover = item.thumbnail || item.cover || '';
-  const rawTitle = (item.title || '').replace(/(.+?)\s*\1/, '$1').trim();
+  // Anichin doubles the series name at the START of card titles
+  // ("Renegade Immortal Renegade Immortal Episode 164..."). Only strip a
+  // repeated phrase at the start — the old /(.+?)\s*\1/ also ate "177"->"17"
+  // and "Good"->"God" anywhere in the title.
+  const rawTitle = (item.title || '').replace(/^(.+?)\s+\1\s*/, '$1 ').trim();
   const rawSlug = (item.slug as string) || link.replace(/^https?:\/\/[^/]+\/(?:seri\/)?/, '').replace(/\/+$/, '');
   // Slug must resolve to the SERIES detail page (strip episode/suffix), so
   // open-detail → /api/donghua?action=detail works. Episode slug preserved

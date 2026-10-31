@@ -7,6 +7,7 @@ const ALLOWED_HOSTS = new Set([
   'i0.wp.com',
   'images.weserv.nl',
   'anichin.cafe',
+  'anichin.my',
 ]);
 
 export async function GET(req: NextRequest) {
