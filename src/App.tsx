@@ -50,6 +50,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
   const [detailSlug, setDetailSlug] = useState<string | null>(null);
   const [watchSlug, setWatchSlug] = useState<string | null>(null);
   const [watchTitle, setWatchTitle] = useState<string | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const [activeSection, setActiveSection] = useState<string>('spotlight');
 
@@ -206,22 +207,145 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
     setWatchHistory([]);
   };
 
+  // --- URL routing -------------------------------------------------------
+  // Every view has a real URL, so the phone/browser back button steps back
+  // through views instead of exiting the app:
+  //   detail : /<series-slug>/
+  //   stream : /<episode-slug>/  (e.g. tales-of-herding-gods-episode-01-...)
+  //   search : /?s=<query>      (query itself is synced via replaceState
+  //             while typing, so typing never adds history entries)
+  // Views are opened with pushState and closed with history.back() when the
+  // entry was pushed by the app; a deep-linked view (no app entry) closes
+  // with replaceState('/') so back still leaves to the referrer, not to the
+  // view again. popstate restores the view from the URL + the entry's
+  // state.view (state wins over the slug pattern, because a watch opened
+  // from a bare series slug has a detail-looking URL).
+  const cleanSlug = (raw: string) =>
+    raw
+      .replace(/^https?:\/\/[^/]+\//, '')
+      .replace(/^(?:seri\/|series\/)/, '')
+      .replace(/\/+$/, '');
+
+  const applyUrlToState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const pathSlug = decodeURIComponent(url.pathname.replace(/^\/+|\/+$/g, ''));
+    const sParam = url.searchParams.get('s');
+    const view = (window.history.state as any)?.view as string | undefined;
+
+    if (view === 'search' || (pathSlug === '' && sParam !== null)) {
+      setDetailSlug(null);
+      setWatchSlug(null);
+      setWatchTitle(undefined);
+      setSearchQuery(sParam || '');
+      setSearchOpen(true);
+      return;
+    }
+    setSearchOpen(false);
+    if (!pathSlug) {
+      setDetailSlug(null);
+      setWatchSlug(null);
+      setWatchTitle(undefined);
+      return;
+    }
+    if (view === 'watch' || (view === undefined && /-episode-\d+/i.test(pathSlug))) {
+      setDetailSlug(null);
+      setWatchSlug(pathSlug);
+      setWatchTitle(undefined);
+    } else {
+      setWatchSlug(null);
+      setWatchTitle(undefined);
+      setDetailSlug(pathSlug);
+    }
+  }, []);
+
+  // Deep link on first load (SSR renders home, client opens the view).
+  useEffect(() => {
+    applyUrlToState();
+  }, [applyUrlToState]);
+
+  // Back / forward buttons.
+  useEffect(() => {
+    window.addEventListener('popstate', applyUrlToState);
+    return () => window.removeEventListener('popstate', applyUrlToState);
+  }, [applyUrlToState]);
+
+  const isAppNavEntry = () =>
+    typeof window !== 'undefined' && (window.history.state as any)?.appNav === true;
+
+  const handleCloseDetail = () => {
+    if (isAppNavEntry()) {
+      window.history.back();
+    } else {
+      setDetailSlug(null);
+      window.history.replaceState(null, '', '/');
+    }
+  };
+
+  const handleCloseWatch = () => {
+    if (isAppNavEntry()) {
+      window.history.back();
+    } else {
+      setWatchSlug(null);
+      window.history.replaceState(null, '', '/');
+    }
+  };
+
+  const handleCloseSearch = () => {
+    if (isAppNavEntry()) {
+      window.history.back();
+    } else {
+      setSearchOpen(false);
+      window.history.replaceState(null, '', '/');
+    }
+  };
+
   // Navigation & Watch triggers
   const handleOpenDetail = (slug: string) => {
-    setDetailSlug(slug);
+    const clean = cleanSlug(slug);
+    if (!clean) return;
+    setSearchOpen(false);
+    setScheduleOpen(false);
+    setWatchlistOpen(false);
+    setWatchSlug(null);
+    setWatchTitle(undefined);
+    setDetailSlug(clean);
+    window.history.pushState({ appNav: true, view: 'detail' }, '', `/${clean}/`);
+  };
+
+  const handleOpenSearch = () => {
+    if (searchOpen) return;
+    setScheduleOpen(false);
+    setWatchlistOpen(false);
+    setDetailSlug(null);
+    setWatchSlug(null);
+    setWatchTitle(undefined);
+    setSearchQuery('');
+    setSearchOpen(true);
+    // Push the current URL as the search entry; typing then replaceStates
+    // it to /?s=<query>, so back always lands on the view below in one tap.
+    window.history.pushState(
+      { appNav: true, view: 'search' },
+      '',
+      window.location.pathname + window.location.search
+    );
   };
 
   const handleWatch = (itemOrSlug: DonghuaCardItem | string, title?: string) => {
-    if (typeof itemOrSlug === 'string') {
-      setWatchSlug(itemOrSlug);
-      setWatchTitle(title);
-    } else {
-      // Use item.link (episode URL) for direct watch, NOT item.slug which is
-      // the series slug (used for detail modal). Episode links let the watch
-      // modal resolve the correct stream + prev/next navigation.
-      setWatchSlug(itemOrSlug.link || itemOrSlug.slug);
-      setWatchTitle(itemOrSlug.title);
-    }
+    // Use item.link (episode URL) for direct watch, NOT item.slug which is
+    // the series slug (used for detail modal). Episode links let the watch
+    // modal resolve the correct stream + prev/next navigation.
+    const raw =
+      typeof itemOrSlug === 'string' ? itemOrSlug : itemOrSlug.link || itemOrSlug.slug;
+    const clean = cleanSlug(raw);
+    if (!clean) return;
+    setSearchOpen(false);
+    setScheduleOpen(false);
+    setWatchlistOpen(false);
+    setDetailSlug(null);
+    setWatchSlug(clean);
+    setWatchTitle(title ?? (typeof itemOrSlug === 'object' ? itemOrSlug.title : undefined));
+    window.history.pushState({ appNav: true, view: 'watch' }, '', `/${clean}/`);
   };
 
   const handleNavigateSection = (sectionId: string) => {
@@ -235,7 +359,13 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
   const handleNavigateHome = () => {
     setSelectedGenre(null);
     setGenreResults(null);
+    setDetailSlug(null);
+    setWatchSlug(null);
+    setSearchOpen(false);
     setActiveSection('spotlight');
+    if (window.location.pathname !== '/' || window.location.search) {
+      window.history.pushState({ appNav: true, view: 'home' }, '', '/');
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -243,7 +373,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
     <div className="min-h-screen bg-canvas text-ink flex flex-col selection:bg-accent selection:text-white relative">
       {/* Main Header */}
       <Header
-        onOpenSearch={() => setSearchOpen(true)}
+        onOpenSearch={handleOpenSearch}
         onOpenWatchlist={() => setWatchlistOpen(true)}
         onOpenSchedule={() => setScheduleOpen(true)}
         onSelectGenre={handleSelectGenre}
@@ -417,7 +547,8 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
       <Suspense fallback={null}>
         <SearchModal
           isOpen={searchOpen}
-          onClose={() => setSearchOpen(false)}
+          initialQuery={searchQuery}
+          onClose={handleCloseSearch}
           onSelectDetail={handleOpenDetail}
           onWatch={handleWatch}
         />
@@ -444,7 +575,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
         {detailSlug && (
           <DetailsModal
             slug={detailSlug}
-            onClose={() => setDetailSlug(null)}
+            onClose={handleCloseDetail}
             onWatchEpisode={(epSlug, title) => handleWatch(epSlug, title)}
             onToggleBookmark={handleToggleBookmark}
             isBookmarked={isBookmarked}
@@ -455,7 +586,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
           <WatchModal
             slug={watchSlug}
             initialTitle={watchTitle}
-            onClose={() => setWatchSlug(null)}
+            onClose={handleCloseWatch}
             onOpenDetail={handleOpenDetail}
             onPlayEpisode={(epSlug, title) => handleWatch(epSlug, title)}
             onSaveHistory={handleSaveHistory}
@@ -476,11 +607,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
         }
         bookmarkCount={bookmarks.length}
         onNavigateHome={handleNavigateHome}
-        onOpenSearch={() => {
-          setScheduleOpen(false);
-          setWatchlistOpen(false);
-          setSearchOpen(true);
-        }}
+        onOpenSearch={handleOpenSearch}
         onOpenSchedule={() => {
           setSearchOpen(false);
           setWatchlistOpen(false);

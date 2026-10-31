@@ -183,7 +183,9 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
                       <button
                         onClick={() => {
                           const firstEp = detail.episodes[detail.episodes.length - 1] || detail.episodes[0];
-                          onClose();
+                          // No onClose(): App's handleWatch closes detail
+                          // itself and pushes the episode URL, so back
+                          // returns to this detail page.
                           onWatchEpisode(firstEp.slug, `${detail.title} - ${firstEp.title}`);
                         }}
                         className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-accent hover:scale-[1.02] active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-sm border border-line-strong transition-all cursor-pointer"
@@ -246,7 +248,6 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
                       <button
                         key={ep.slug}
                         onClick={() => {
-                          onClose();
                           onWatchEpisode(ep.slug, `${detail.title} - ${ep.title}`);
                         }}
                         className="group p-2 sm:p-2.5 rounded-xl bg-elevated hover:bg-elevated active:bg-accent/20 border border-line hover:border-accent-soft/40 flex items-center justify-between gap-2 cursor-pointer transition-all text-left"

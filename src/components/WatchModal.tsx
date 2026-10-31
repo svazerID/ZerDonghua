@@ -142,7 +142,8 @@ export const WatchModal: React.FC<WatchModalProps> = ({
                 <button
                   onClick={() => {
                     if (streamData.series.slug) {
-                      onClose();
+                      // No onClose(): App's handleOpenDetail closes the
+                      // player itself and pushes the detail URL.
                       onOpenDetail(streamData.series.slug);
                     }
                   }}
@@ -234,7 +235,6 @@ export const WatchModal: React.FC<WatchModalProps> = ({
                 {streamData?.series?.slug && (
                   <button
                     onClick={() => {
-                      onClose();
                       onOpenDetail(streamData.series.slug);
                     }}
                     className="px-4 py-2 rounded-xl bg-line hover:bg-line-strong text-ink text-xs font-semibold"
@@ -333,7 +333,6 @@ export const WatchModal: React.FC<WatchModalProps> = ({
             {streamData?.series?.slug && (
               <button
                 onClick={() => {
-                  onClose();
                   onOpenDetail(streamData.series.slug);
                 }}
                 className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-accent/20 hover:bg-accent/30 active:scale-95 text-accent-soft text-[11px] sm:text-xs font-semibold border border-accent-soft/40 transition-all cursor-pointer"

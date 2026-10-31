@@ -6,6 +6,10 @@ import { donghuaApi } from '../services/donghuaApi';
 
 interface SearchModalProps {
   isOpen: boolean;
+  // Query the modal should open with (from the /?s= deep link or a
+  // back/forward restore). Read only when the modal opens, never while
+  // the user is typing, so typing is never clobbered by a re-render.
+  initialQuery?: string;
   onClose: () => void;
   onSelectDetail: (slug: string) => void;
   onWatch: (slug: string, title?: string) => void;
@@ -24,6 +28,7 @@ const TRENDING_SEARCHES = [
 
 export const SearchModal: React.FC<SearchModalProps> = ({
   isOpen,
+  initialQuery,
   onClose,
   onSelectDetail,
   onWatch
@@ -35,6 +40,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- initialQuery
+      // is intentionally read on open only (see prop comment).
+      setQuery(initialQuery || '');
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       setQuery('');
@@ -66,6 +74,15 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
     setLoading(true);
     const timer = setTimeout(() => {
+      if (!isOpen) return;
+      // Keep the URL in sync with the query via replaceState (never
+      // pushState): typing must not add history entries, or one back
+      // tap would only undo one keystroke instead of closing search.
+      window.history.replaceState(
+        { appNav: true, view: 'search' },
+        '',
+        query.trim() ? `/?s=${encodeURIComponent(query.trim())}` : '/'
+      );
       donghuaApi
         .search(query.trim())
         .then((res) => {
@@ -79,7 +96,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, isOpen]);
 
   if (!isOpen) return null;
 
@@ -153,7 +170,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               <div
                 key={item.slug}
                 onClick={() => {
-                  onClose();
+                  // No onClose(): App's handleOpenDetail closes search
+                  // itself and pushes the detail URL, so back returns
+                  // to this search instead of skipping it.
                   onSelectDetail(item.slug);
                 }}
                 className="group p-2.5 rounded-2xl hover:bg-elevated flex items-center justify-between gap-3 cursor-pointer transition-all border border-transparent hover:border-accent-soft/40"
@@ -197,7 +216,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onClose();
                       onWatch(item.slug, item.title);
                     }}
                     className="p-2 rounded-xl bg-accent text-white transition-colors shadow-sm"
