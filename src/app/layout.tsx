@@ -1,19 +1,24 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '900'],
+// Self-hosted variable fonts (latin subset, downloaded from Google Fonts).
+// Previously these came from next/font/google, which downloads the fonts
+// from Google at build time — and that fetch is exactly what broke the
+// Workers deploy (next/font loader crashed parsing a font-file URL).
+// With local files, the Workers build never touches Google Fonts.
+const inter = localFont({
+  src: './fonts/Inter.woff2',
   variable: '--font-inter',
   display: 'swap',
+  weight: '100 900',
 });
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
+const outfit = localFont({
+  src: './fonts/Outfit.woff2',
   variable: '--font-outfit',
   display: 'swap',
+  weight: '100 900',
 });
 
 export const metadata: Metadata = {
