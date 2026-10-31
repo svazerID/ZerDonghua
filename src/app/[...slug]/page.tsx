@@ -1,4 +1,6 @@
+import type { Metadata } from 'next';
 import { getDonghua } from '@/lib/donghuaServer';
+import { metadataForSlug } from '@/lib/ogMeta';
 import App from '@/App';
 import type { DonghuaHomeData } from '@/types';
 
@@ -9,6 +11,18 @@ import type { DonghuaHomeData } from '@/types';
 // back button steps back through views instead of exiting.
 // Same per-request rendering as src/app/page.tsx (no prerender fetch).
 export const dynamic = 'force-dynamic';
+
+// Per-page link preview (Open Graph + Twitter Cards) for shared deep
+// links: the title/description come from the slug, so a shared detail or
+// episode link previews that title instead of the generic site title.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return metadataForSlug(slug);
+}
 
 export default async function SlugPage() {
   let initialHomeData: DonghuaHomeData | null = null;

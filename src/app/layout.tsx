@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import { OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, SITE_DESCRIPTION, SITE_URL } from '@/lib/site';
 import './globals.css';
 
 // Self-hosted variable fonts (latin subset, downloaded from Google Fonts).
@@ -22,19 +23,33 @@ const outfit = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'ZerDonghua - Streaming Donghua Subtitle Indonesia Terlengkap',
-  description:
-    'Nonton streaming Donghua (Chinese Anime) 3D dan 2D subtitle Indonesia kualitas HD gratis dengan multi-server player, update tercepat, dan jadwal rilis mingguan.',
+  description: SITE_DESCRIPTION,
   applicationName: 'ZerDonghua',
   icons: { icon: '/icon.png', apple: '/icon.png' },
   openGraph: {
     title: 'ZerDonghua - Streaming Donghua Subtitle Indonesia',
-    description:
-      'Nonton streaming Donghua (Chinese Anime) 3D dan 2D subtitle Indonesia kualitas HD gratis dengan multi-server player, update tercepat, dan jadwal rilis mingguan.',
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: 'ZerDonghua',
+    locale: 'id_ID',
     type: 'website',
-    images: ['/icon.png'],
+    images: [
+      {
+        url: OG_IMAGE,
+        width: OG_IMAGE_WIDTH,
+        height: OG_IMAGE_HEIGHT,
+        alt: 'ZerDonghua - Streaming Donghua Subtitle Indonesia',
+      },
+    ],
   },
-  twitter: { card: 'summary_large_image', images: ['/icon.png'] },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ZerDonghua - Streaming Donghua Subtitle Indonesia',
+    description: SITE_DESCRIPTION,
+    images: [OG_IMAGE],
+  },
 };
 
 export const viewport: Viewport = {
