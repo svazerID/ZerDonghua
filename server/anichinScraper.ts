@@ -203,12 +203,19 @@ export class AnichinScraper extends DonghubScraper {
     }
     // Slugs may arrive as "series/<slug>" (anichin.my series URLs) — strip
     // that prefix, otherwise /seri/series/<slug>/ 404s into fallback data.
+    const isSeriesUrl = /^https?:\/\/[^/]+\/(?:seri|series)\//.test(urlOrSlug.trim());
     const bareSlug = urlOrSlug.replace(/^https?:\/\/[^/]+\//, '').replace(/^(?:seri\/|series\/)/, '').replace(/^\/+|\/+$/g, '');
-    const cleanUrl = urlOrSlug.startsWith('http')
+    const cleanUrl = urlOrSlug.startsWith('http') && !isSeriesUrl
       ? urlOrSlug.trim()
-      : `${BASE_URL}/seri/${bareSlug}/`;
+      : `${BASE_URL}/series/${bareSlug}/`;
+    // Since 2026-11 anichin.my's /series/<slug>/ permalink 301s to itself
+    // (redirect loop), but the WP query var ?anime=<slug> still renders the
+    // same series page.
+    const fetchUrl = cleanUrl.startsWith(`${BASE_URL}/series/`)
+      ? `${BASE_URL}/?anime=${encodeURIComponent(bareSlug)}`
+      : cleanUrl;
 
-    const html = await this.fetchAnichinHtml(cleanUrl);
+    const html = await this.fetchAnichinHtml(fetchUrl);
     const $ = cheerio.load(html);
 
     const title = $('h1.entry-title').text().trim();
@@ -420,9 +427,9 @@ export class AnichinScraper extends DonghubScraper {
   }
 
   async getAnichinGenrePage(genreSlug: string, page = 1): Promise<{ results: any[]; pagination: any }> {
-        const url = page > 1
-          ? `${BASE_URL}/genres/${genreSlug}/page/${page}`
-          : `${BASE_URL}/genres/${genreSlug}/`;
+        // /genres/<slug>/ now 404s on anichin.my; the series filter
+        // (?post_type=anime&genre[]=<slug>) still works and paginates via ?page=N.
+        const url = `${BASE_URL}/?page=${Number(page)}&post_type=anime&genre%5B0%5D=${encodeURIComponent(genreSlug)}&order=update`;
         const html = await this.fetchAnichinHtml(url);
         const $ = cheerio.load(html);
         const results: any[] = [];
@@ -430,11 +437,9 @@ export class AnichinScraper extends DonghubScraper {
           const c = this.parseCard($, el);
           if (c) results.push(c);
         });
-        const totalPages = $('.pagination a')
-          .map((_, el) => $(el).text().trim())
-          .get()
-          .filter((t) => /^\d+$/.test(t))
-          .reduce((max, t) => Math.max(max, Number(t)), Number(page));
-        return { results, pagination: { currentPage: Number(page), totalPages, hasNextPage: totalPages > Number(page) } };
+        // The filter page only exposes prev/next links, not a page count.
+        const hasNextPage = $('.hpage a.r').length > 0;
+        const totalPages = Number(page) + (hasNextPage ? 1 : 0);
+        return { results, pagination: { currentPage: Number(page), totalPages, hasNextPage } };
       }
 }
