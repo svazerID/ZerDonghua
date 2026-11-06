@@ -346,3 +346,33 @@ gagalnya.
   di lingkungan yang sama — dan playback di HP pengguna (IP rumahan)
   dikonfirmasi JALAN. Jadi error datacenter itu blok IP datacenter dari
   Dailymotion, bukan masalah situs.
+
+---
+
+# FIX_LOG — Detail & genre anichin.my rusak (permalink loop / 404)
+
+**Tanggal:** 2026-11-06
+**Komponen:** `server/anichinScraper.ts`
+
+## Symptom
+Detail series dan halaman genre jatuh ke data fallback statis (cover svg,
+judul donghub palsu). Home, search, schedule, dan episode masih jalan.
+
+## Root Cause
+Kerusakan di sisi anichin.my: `/series/<slug>/` merespons 301 ke URL
+yang sama (loop, `x-redirect-by: Rank Math`), sehingga fetch timeout
+9 detik; `/genres/<slug>/` dan `/series/` merespons 404. Link di situs
+mereka sendiri juga rusak.
+
+## Fix
+- Detail diambil lewat query var WordPress `/?anime=<slug>` (render
+  halaman series yang sama, tanpa rewrite rule). `url` yang dikembalikan
+  tetap `/series/<slug>/`.
+- Genre diambil lewat filter `/?page=N&post_type=anime&genre[0]=<slug>&order=update`;
+  `hasNextPage` dari link `.hpage a.r` (halaman filter tidak memberi
+  jumlah total halaman).
+
+## Verification
+- API lokal: detail Renegade Immortal 165 episode, BTTH S5 218 episode,
+  genre action 20 hasil + next page, romance page 2 berbeda dari page 1,
+  episode 165 dengan 5 mirror + prev/series terisi, home 20/22/23.
