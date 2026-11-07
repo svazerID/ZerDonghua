@@ -34,6 +34,7 @@
 - **📱 Mobile Native Experience**:
   - *Floating bottom navigation bar* khusus mobile untuk navigasi cepat (Beranda, Cari, Jadwal, Watchlist).
   - Desain adaptif dari layar smartphone, tablet, hingga ultra-wide desktop.
+  - **PWA**: bisa diinstal sebagai aplikasi di Android (menu Chrome *Instal aplikasi* atau tombol *Instal Aplikasi* di menu header), tampil layar penuh dengan ikon & splash screen sendiri, plus halaman offline saat koneksi terputus.
 
 ---
 

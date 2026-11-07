@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, SITE_DESCRIPTION, SITE_URL } from '@/lib/site';
+import { OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH, SITE_DESCRIPTION, SITE_URL, THEME_COLOR_DARK } from '@/lib/site';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import './globals.css';
 
 // Self-hosted variable fonts (latin subset, downloaded from Google Fonts).
@@ -53,10 +54,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafafa' },
-    { media: '(prefers-color-scheme: dark)', color: '#06060b' }
-  ],
+  // The app theme is dark by default regardless of the OS scheme (light is a
+  // saved user choice), so the status bar starts dark; Header syncs it when
+  // the light theme is active.
+  themeColor: THEME_COLOR_DARK,
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-canvas text-ink antialiased selection:bg-accent selection:text-white">
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
