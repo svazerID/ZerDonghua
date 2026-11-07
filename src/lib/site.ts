@@ -1,4 +1,5 @@
-// Shared site constants for link previews (Open Graph + Twitter Cards).
+// Shared site constants: link previews (Open Graph + Twitter Cards) and
+// theme colors.
 // Kept here (not in layout.tsx) so route files can import them without
 // pulling in the layout component, fonts, or globals.css.
 export const SITE_URL = 'https://donghua.svazer.us.ci';
@@ -13,3 +14,8 @@ export const OG_IMAGE_HEIGHT = 559;
 
 export const SITE_DESCRIPTION =
   'Nonton streaming Donghua (Chinese Anime) 3D dan 2D subtitle Indonesia kualitas HD gratis dengan multi-server player, update tercepat, dan jadwal rilis mingguan.';
+
+// Browser/OS UI colors (theme-color, PWA status bar and splash), equal to
+// --c-canvas of each theme in globals.css. The app defaults to dark.
+export const THEME_COLOR_DARK = '#06060b';
+export const THEME_COLOR_LIGHT = '#fafafa';

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bookmark, Calendar, Sparkles, Film, Flame, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, Bookmark, Calendar, Sparkles, Film, Flame, Menu, X, Sun, Moon, Download } from 'lucide-react';
 import { ZerDonghuaLogo } from './ZerDonghuaLogo';
+import { useCanInstall, promptInstall } from '../lib/installPrompt';
+import { THEME_COLOR_DARK, THEME_COLOR_LIGHT } from '../lib/site';
+
+// Keeps the browser/PWA status bar color on the app's theme.
+const syncThemeColor = (dark: boolean) => {
+  document
+    .querySelectorAll('meta[name="theme-color"]')
+    .forEach((meta) => meta.setAttribute('content', dark ? THEME_COLOR_DARK : THEME_COLOR_LIGHT));
+};
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -24,13 +33,16 @@ export const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const canInstall = useCanInstall();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    setIsDark(document.documentElement.classList.contains('dark'));
+    const dark = document.documentElement.classList.contains('dark');
+    setIsDark(dark);
+    syncThemeColor(dark);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -38,6 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
     const next = !isDark;
     setIsDark(next);
     document.documentElement.classList.toggle('dark', next);
+    syncThemeColor(next);
     try { localStorage.setItem('theme', next ? 'dark' : 'light'); } catch {}
   };
 
@@ -209,6 +222,18 @@ export const Header: React.FC<HeaderProps> = ({
             {isDark ? <Sun className="w-4 h-4 text-warn" /> : <Moon className="w-4 h-4 text-accent-soft" />}
             {isDark ? 'Mode Terang' : 'Mode Gelap'}
           </button>
+          {/* Only shown when the browser reports the PWA as installable */}
+          {canInstall && (
+            <button
+              onClick={() => {
+                promptInstall();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-sub hover:text-ink hover:bg-line flex items-center gap-2"
+            >
+              <Download className="w-4 h-4 text-accent-soft" /> Instal Aplikasi
+            </button>
+          )}
         </div>
       )}
     </header>

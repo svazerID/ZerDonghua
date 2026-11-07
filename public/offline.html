@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#06060b" />
+    <title>Offline - ZerDonghua</title>
+    <!-- Self-contained on purpose: served by the service worker with no network. -->
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #06060b;
+        color: #ffffff;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+        -webkit-tap-highlight-color: transparent;
+      }
+      main {
+        max-width: 340px;
+      }
+      .icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        background: #0d1015;
+        border: 1px solid #ffffff1a;
+        color: #a78bfa;
+      }
+      .brand {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .brand span {
+        color: #a78bfa;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+      }
+      .desc {
+        margin: 0 0 24px;
+        color: #a1a1aa;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      button {
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 24px;
+        background: #7c3aed;
+        color: #ffffff;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:active {
+        transform: scale(0.97);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h.01" />
+          <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+          <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
+          <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
+          <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
+          <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
+          <path d="m2 2 20 20" />
+        </svg>
+      </div>
+      <p class="brand">ZER<span>DONGHUA</span></p>
+      <h1>Tidak ada koneksi internet</h1>
+      <p class="desc">
+        Silakan periksa koneksi Anda, lalu coba lagi. Halaman akan dimuat ulang otomatis saat koneksi kembali.
+      </p>
+      <button type="button" onclick="location.reload()">Coba Lagi</button>
+    </main>
+    <script>
+      addEventListener('online', function () {
+        location.reload();
+      });
+    </script>
+  </body>
+</html>
