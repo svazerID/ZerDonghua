@@ -9,8 +9,10 @@
 	],
 	// Workers Builds runs `wrangler deploy` on main but `wrangler versions upload`
 	// on other branches; both run this, so .open-next/ exists for either path.
+	// The OpenNext config lives in cloudflare/ (not the root) so `wrangler deploy`
+	// does not skip this build by handing off to `opennextjs-cloudflare deploy`.
 	"build": {
-		"command": "npx opennextjs-cloudflare build"
+		"command": "npx opennextjs-cloudflare build --openNextConfigPath cloudflare/open-next.config.ts"
 	},
 	"assets": {
 		"directory": ".open-next/assets",

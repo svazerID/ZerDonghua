@@ -9,9 +9,9 @@
     "start": "next start",
     "lint": "next lint",
     "clean": "rm -rf .next",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "preview": "opennextjs-cloudflare build --openNextConfigPath cloudflare/open-next.config.ts && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build --openNextConfigPath cloudflare/open-next.config.ts && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build --openNextConfigPath cloudflare/open-next.config.ts && opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

@@ -376,3 +376,55 @@ mereka sendiri juga rusak.
 - API lokal: detail Renegade Immortal 165 episode, BTTH S5 218 episode,
   genre action 20 hasil + next page, romance page 2 berbeda dari page 1,
   episode 165 dengan 5 mirror + prev/series terisi, home 20/22/23.
+
+---
+
+# FIX_LOG — Deploy production Workers gagal sejak PR #4
+
+**Tanggal:** 2026-11-07
+**Komponen:** `open-next.config.ts` → `cloudflare/open-next.config.ts`, `wrangler.jsonc`, `package.json`
+
+## Symptom
+Workers Builds untuk `main` gagal di setiap merge sejak PR #4 (`bf87abf`)
+dan PR #5 (`a359389`, PWA), sementara build branch (`versions upload`)
+sukses dan preview URL-nya jalan. Production tertahan di build 31 Oktober
+(`2d074f4`): `/manifest.webmanifest`, `/sw.js`, dan ikon PWA masih dijawab
+HTML aplikasi, dan perbaikan detail/genre PR #4 juga belum live.
+
+## Root Cause
+PR #4 menambahkan `open-next.config.ts` di root dan custom build
+`npx opennextjs-cloudflare build` di `wrangler.jsonc`. Pada `wrangler deploy`
+(perintah deploy production), wrangler 4.158 mendeteksi proyek OpenNext
+(next.config + `open-next.config.ts` di root + paket `@opennextjs/cloudflare`)
+lalu memanggil `opennextjs-cloudflare deploy` SEBELUM custom build dijalankan
+(`maybeDelegateToOpenNextDeployCommand` dipanggil sebelum `getEntry` →
+`runCustomBuild`). Build command Workers Builds tidak menjalankan build
+OpenNext (tercatat `bun run build` = `next build`), jadi `.open-next/` belum
+ada dan OpenNext berhenti dengan `Could not find compiled Open Next config,
+did you run the build command?`. `wrangler versions upload` (branch
+non-produksi) tidak punya delegasi ini, jadi custom build tetap jalan.
+
+## Fix
+- `open-next.config.ts` dipindah ke `cloudflare/open-next.config.ts`
+  (wrangler hanya mendeteksi file di root), sehingga `wrangler deploy`
+  menjalankan custom build lalu deploy, sama seperti `versions upload`.
+- Custom build di `wrangler.jsonc` dan script `preview`/`deploy`/`upload`
+  memakai `--openNextConfigPath cloudflare/open-next.config.ts`.
+
+## Verification
+- Reproduksi lokal (wrangler 4.158.0, tanpa `.open-next`, `CI=true`, tanpa
+  kredensial). Sebelum fix: `OpenNext project detected, calling
+  opennextjs-cloudflare deploy` → `Could not find compiled Open Next config`
+  (exit 1). Sesudah fix: tidak ada delegasi, custom build OpenNext jalan,
+  `.open-next/worker.js` + aset PWA terbentuk, berhenti hanya di langkah
+  autentikasi (`CLOUDFLARE_API_TOKEN` memang tidak ada di sandbox).
+- Log build Cloudflare tidak bisa dibuka dari sandbox, jadi penyebab di CI
+  disimpulkan dari reproduksi + pola sukses/gagal; konfirmasi akhirnya
+  adalah build production setelah merge.
+
+## Catatan
+- Jangan kembalikan `open-next.config.ts` ke root (mis. lewat
+  `opennextjs-cloudflare migrate`) kecuali build command di dashboard juga
+  diubah ke `npx opennextjs-cloudflare build`.
+- `npx opennextjs-cloudflare build` manual wajib memakai flag
+  `--openNextConfigPath` (atau pakai `npm run preview` / `deploy` / `upload`).
