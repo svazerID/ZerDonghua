@@ -2,6 +2,7 @@ import React from 'react';
 import { SafeImage as Image } from './SafeImage';
 import { Play } from 'lucide-react';
 import { DonghuaCardItem } from '../types';
+import { motion } from 'motion/react';
 
 interface SmallCardProps {
   item: DonghuaCardItem;
@@ -11,7 +12,9 @@ interface SmallCardProps {
 // ponytail: compact card used in the watch modal "populer" rail; reuses SafeImage
 // + /api/img proxy so Cloudflare Referer-403 doesn't blank posters.
 export const DonghuaCardSmall: React.FC<SmallCardProps> = ({ item, onWatch }) => (
-  <div className="relative flex items-center gap-2 rounded-lg sm:rounded-xl bg-elevated hover:bg-line active:bg-line transition-all border border-line hover:border-accent-soft/30 overflow-hidden shrink-0 w-full">
+  <motion.div
+    whileTap={{ scale: 0.98 }}
+    className="relative flex items-center gap-2 rounded-lg sm:rounded-xl bg-elevated hover:bg-line active:bg-line transition-all border border-line hover:border-accent-soft/30 overflow-hidden shrink-0 w-full">
     <div className="relative aspect-[3/4] w-12 h-16 sm:w-14 sm:h-20 rounded-none sm:rounded-l-xl overflow-hidden bg-canvas border-r border-line shrink-0">
       <Image
         src={item.cover}
@@ -44,5 +47,5 @@ export const DonghuaCardSmall: React.FC<SmallCardProps> = ({ item, onWatch }) =>
     >
       <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
     </button>
-  </div>
+  </motion.div>
 );

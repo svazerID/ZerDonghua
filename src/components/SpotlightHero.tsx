@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeImage as Image } from './SafeImage';
 import { Play, Info, ChevronLeft, ChevronRight, Sparkles, Bookmark, Check } from 'lucide-react';
 import { DonghuaRecommendation, DonghuaCardItem } from '../types';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface SpotlightHeroProps {
   recommendations: DonghuaRecommendation[];
@@ -107,7 +108,15 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
           </div>
 
           {/* Banner Content */}
-          <div className="relative z-10 w-full p-4 sm:p-8 md:p-10">
+          <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={current.slug}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10 w-full p-4 sm:p-8 md:p-10"
+          >
             <div className="flex items-center gap-3 sm:gap-6 lg:gap-8">
               {/* Left Column: Information & Actions */}
               <div className="flex-1 min-w-0 space-y-3 sm:space-y-4">
@@ -169,7 +178,13 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
 
               {/* Right Column: Compact Poster Preview (desktop only — mobile uses the full-bleed artwork) */}
               <div className="hidden sm:block shrink-0">
-                <div
+                <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={current.slug}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                   onClick={() => onOpenDetail(current.slug)}
                   className="relative group w-20 sm:w-40 lg:w-52 xl:w-60 aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden border border-line hover:border-accent-soft/40 hover:shadow-lg bg-surface cursor-pointer transition-all duration-300"
                 >
@@ -190,7 +205,8 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
                       {currentIndex + 1} / {recommendations.length}
                     </span>
                   </div>
-                </div>
+                </motion.div>
+                </AnimatePresence>
               </div>
             </div>
 
@@ -230,7 +246,8 @@ export const SpotlightHero: React.FC<SpotlightHeroProps> = ({
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>

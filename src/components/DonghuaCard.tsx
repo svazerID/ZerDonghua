@@ -2,6 +2,7 @@ import React from 'react';
 import { SafeImage as Image } from './SafeImage';
 import { Play, Flame, Bookmark, Check } from 'lucide-react';
 import { DonghuaCardItem } from '../types';
+import { motion } from 'motion/react';
 
 interface DonghuaCardProps {
   item: DonghuaCardItem;
@@ -21,8 +22,11 @@ export const DonghuaCard: React.FC<DonghuaCardProps> = ({
   rank
 }) => {
   return (
-    <div
-      className="group relative flex flex-col rounded-xl sm:rounded-2xl bg-elevated hover:bg-elevated active:bg-surface border border-line hover:border-accent-soft/40 p-2 sm:p-2.5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer select-none"
+    <motion.div
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="group relative flex flex-col rounded-xl sm:rounded-2xl bg-elevated hover:bg-elevated active:bg-surface border border-line hover:border-accent-soft/40 p-2 sm:p-2.5 transition-all duration-300 hover:shadow-lg cursor-pointer select-none"
       onClick={() => onSelect(item)}
     >
       {/* Poster Media Box */}
@@ -140,7 +144,7 @@ export const DonghuaCard: React.FC<DonghuaCardProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
