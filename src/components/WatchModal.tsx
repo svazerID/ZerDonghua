@@ -435,7 +435,7 @@ export const WatchModal: React.FC<WatchModalProps> = ({
           <div className="relative aspect-[3/4] w-9 h-12 sm:w-10 sm:h-14 rounded-md overflow-hidden bg-canvas border border-line shrink-0">
             <Image src={it.cover} alt={it.title} fill sizes="40px" className="object-cover" />
           </div>
-          <span className="text-[10px] sm:text-xs font-semibold text-accent-soft w-10 sm:w-12 shrink-0 text-right">EP</span>
+          <span className="text-[10px] sm:text-xs font-semibold text-accent-soft shrink-0">EP</span>
           <span title={it.title} className="text-[11px] sm:text-xs font-semibold text-sub line-clamp-1 flex-1">{it.title}</span>
           {it.episode && (<span className="text-[9px] sm:text-[10px] text-mute bg-line px-1.5 py-0.25 rounded shrink-0">{it.episode}</span>)}
         </button>
