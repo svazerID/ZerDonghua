@@ -3,6 +3,7 @@ import { SafeImage as Image } from './SafeImage';
 import { Search, X, Flame, Play, Info } from 'lucide-react';
 import { DonghuaCardItem } from '../types';
 import { donghuaApi } from '../services/donghuaApi';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -98,12 +99,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     return () => clearTimeout(timer);
   }, [query, isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
       id="search-modal"
-      className="fixed inset-0 z-50 bg-canvas/90 flex items-start justify-center pt-16 sm:pt-24 px-4 pb-6 overflow-y-auto animate-in fade-in duration-150"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="fixed inset-0 z-50 bg-canvas/90 flex items-start justify-center pt-16 sm:pt-24 px-4 pb-6 overflow-y-auto"
       onClick={onClose}
     >
       <div
@@ -234,6 +239,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           ) : null}
         </div>
       </div>
-    </div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

@@ -3,6 +3,7 @@ import { SafeImage as Image } from './SafeImage';
 import { Calendar, Clock, X, Play, Info } from 'lucide-react';
 import { donghuaApi } from '../services/donghuaApi';
 import { DonghuaScheduleItem } from '../types';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface WeeklyScheduleProps {
   isOpen: boolean;
@@ -41,15 +42,19 @@ export const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
       .finally(() => setLoading(false));
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const days = Object.keys(scheduleData);
   const currentItems = selectedDay ? scheduleData[selectedDay] || [] : [];
 
   return (
-    <div
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
       id="schedule-modal"
-      className="fixed inset-0 z-50 bg-canvas/85 flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="fixed inset-0 z-50 bg-canvas/85 flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
       onClick={onClose}
     >
       <div
@@ -172,6 +177,8 @@ export const WeeklySchedule: React.FC<WeeklyScheduleProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

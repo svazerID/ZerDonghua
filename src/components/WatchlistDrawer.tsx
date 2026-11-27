@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SafeImage as Image } from './SafeImage';
 import { Bookmark, History, Trash2, Play, X, Clock } from 'lucide-react';
 import { BookmarkEntry, WatchHistoryEntry } from '../types';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface WatchlistDrawerProps {
   isOpen: boolean;
@@ -28,16 +29,24 @@ export const WatchlistDrawer: React.FC<WatchlistDrawerProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'bookmarks' | 'history'>('bookmarks');
 
-  if (!isOpen) return null;
-
   return (
-    <div
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
       id="watchlist-drawer-backdrop"
-      className="fixed inset-0 z-50 bg-canvas/80 flex justify-end animate-in fade-in duration-200"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="fixed inset-0 z-50 bg-canvas/80 flex justify-end"
       onClick={onClose}
     >
-      <div
-        className="w-full max-w-md h-full bg-surface/95 border-l border-line shadow-lg flex flex-col animate-in slide-in-from-right duration-250 text-sub"
+      <motion.div
+        initial={{ x: 24, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 24, opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        className="w-full max-w-md h-full bg-surface/95 border-l border-line shadow-lg flex flex-col text-sub"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
@@ -240,7 +249,9 @@ export const WatchlistDrawer: React.FC<WatchlistDrawerProps> = ({
             )
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
