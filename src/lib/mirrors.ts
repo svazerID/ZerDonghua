@@ -52,5 +52,14 @@ export function normalizeMirrors<T extends MirrorLike>(mirrors: T[]): T[] {
     return (aHasAds ? 1 : -1) - (bHasAds ? 1 : -1);
   });
 
+  // Swap OK.ru and Dailymotion slots so Dailymotion leads and becomes the default
+  // player (see selectFirstPlayable in WatchModal). Targeted swap, not a global
+  // priority list, to avoid demoting anichin.stream/Premium (see donghuaServer.ts).
+  const dmIdx = normalized.findIndex((m) => /dailymotion|dai\.ly/i.test((m.name || '').toString()));
+  const okIdx = normalized.findIndex((m) => /ok\.?ru/i.test((m.name || '').toString()));
+  if (dmIdx >= 0 && okIdx >= 0 && dmIdx !== okIdx) {
+    [normalized[dmIdx], normalized[okIdx]] = [normalized[okIdx], normalized[dmIdx]];
+  }
+
   return normalized;
 }

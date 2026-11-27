@@ -30,6 +30,24 @@ test('embed www dailymotion ditulis ulang ke player geo xid0t (www kena Forbidde
   assert.equal(m.streamUrl, 'https://geo.dailymotion.com/player/xid0t.html?video=k3uwIc6cJbu3KvLSFzY');
 });
 
+test('Dailymotion ditukar ke slot OK.ru (jadi server default pertama)', () => {
+  const names = normalizeMirrors([
+    { name: 'OK.ru', streamUrl: 'https://ok.ru/videoembed/1' },
+    { name: 'Rumble [Setting DNS]', streamUrl: 'https://rumble.com/embed/v1' },
+    { name: 'Dailymotion [Ads]', streamUrl: 'https://geo.dailymotion.com/player/xid0t.html?video=k1' },
+    { name: 'Drive [Ads]', streamUrl: 'https://drive.google.com/file/d/1/preview' },
+  ]).map((m) => m.name);
+  assert.deepEqual(names, ['Dailymotion [Ads]', 'Rumble [Setting DNS]', 'OK.ru', 'Drive [Ads]']);
+});
+
+test('swap dilewati jika salah satu server tidak ada', () => {
+  const names = normalizeMirrors([
+    { name: 'OK.ru', streamUrl: 'https://ok.ru/videoembed/1' },
+    { name: 'Drive [Ads]', streamUrl: 'https://drive.google.com/file/d/1/preview' },
+  ]).map((m) => m.name);
+  assert.deepEqual(names, ['OK.ru', 'Drive [Ads]']);
+});
+
 test('mirror non-Dailymotion tidak disentuh', () => {
   const [d, o] = normalizeMirrors([
     { name: 'Dtube', streamUrl: 'https://play.d.tube/?v=1820f158-34d7-4123-9f10-016506fc29be' },
