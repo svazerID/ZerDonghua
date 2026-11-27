@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Search, Calendar, Bookmark } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface MobileBottomNavProps {
   activeTab: 'home' | 'search' | 'schedule' | 'watchlist';
@@ -37,7 +38,11 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           title="Beranda"
         >
           {activeTab === 'home' && (
-            <span className="absolute -top-1 w-6 h-1 rounded-full bg-accent" />
+            <motion.span
+              layoutId="nav-active"
+              className="absolute -top-1 w-6 h-1 rounded-full bg-accent"
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            />
           )}
           <div
             className={`p-1 rounded-xl transition-all ${
@@ -57,7 +62,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group"
           title="Cari Donghua"
         >
-          <div className="p-1 rounded-xl group-hover:text-accent-soft group-hover:bg-line transition-all">
+          {activeTab === 'search' && (
+            <motion.span
+              layoutId="nav-active"
+              className="absolute -top-1 w-6 h-1 rounded-full bg-accent"
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            />
+          )}
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'search' ? 'bg-accent/20 text-accent-soft' : 'group-hover:text-accent-soft group-hover:bg-line'}`}>
             <Search className="w-5 h-5" />
           </div>
           <span className="text-[10px] tracking-tight leading-none mt-1 group-hover:text-ink">
@@ -71,7 +83,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group"
           title="Jadwal Rilis"
         >
-          <div className="p-1 rounded-xl group-hover:text-accent-soft group-hover:bg-line transition-all">
+          {activeTab === 'schedule' && (
+            <motion.span
+              layoutId="nav-active"
+              className="absolute -top-1 w-6 h-1 rounded-full bg-accent"
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            />
+          )}
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'schedule' ? 'bg-accent/20 text-accent-soft' : 'group-hover:text-accent-soft group-hover:bg-line'}`}>
             <Calendar className="w-5 h-5" />
           </div>
           <span className="text-[10px] tracking-tight leading-none mt-1 group-hover:text-ink">
@@ -85,7 +104,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group relative"
           title="Watchlist & Riwayat"
         >
-          <div className="p-1 rounded-xl group-hover:text-accent-soft group-hover:bg-line transition-all relative">
+          {activeTab === 'watchlist' && (
+            <motion.span
+              layoutId="nav-active"
+              className="absolute -top-1 w-6 h-1 rounded-full bg-accent"
+              transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+            />
+          )}
+          <div className={`p-1 rounded-xl transition-all relative ${activeTab === 'watchlist' ? 'bg-accent/20 text-accent-soft' : 'group-hover:text-accent-soft group-hover:bg-line'}`}>
             <Bookmark className="w-5 h-5" />
             {bookmarkCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-accent border border-line-strong text-white text-[9px] font-black flex items-center justify-center shadow-md">

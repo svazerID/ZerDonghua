@@ -3,6 +3,7 @@ import { Search, Bookmark, Calendar, Sparkles, Film, Flame, Menu, X, Sun, Moon, 
 import { ZerDonghuaLogo } from './ZerDonghuaLogo';
 import { useCanInstall, promptInstall } from '../lib/installPrompt';
 import { THEME_COLOR_DARK, THEME_COLOR_LIGHT } from '../lib/site';
+import { AnimatePresence, motion } from 'motion/react';
 
 // Keeps the browser/PWA status bar color on the app's theme.
 const syncThemeColor = (dark: boolean) => {
@@ -177,8 +178,15 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Mobile Drawer Menu */}
+      <AnimatePresence>
       {mobileMenuOpen && (
-        <div className="md:hidden bg-surface/98 border-b border-line px-4 py-4 space-y-2 animate-in slide-in-from-top duration-200">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+          className="md:hidden bg-surface/98 border-b border-line px-4 py-4 space-y-2"
+        >
           <button
             onClick={() => {
               onNavigateSection('spotlight');
@@ -234,8 +242,9 @@ export const Header: React.FC<HeaderProps> = ({
               <Download className="w-4 h-4 text-accent-soft" /> Instal Aplikasi
             </button>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 };
