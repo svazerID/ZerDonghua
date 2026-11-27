@@ -7,6 +7,7 @@ import { GenreBar } from './components/GenreBar';
 import { FeaturedRail } from './components/FeaturedRail';
 import { ContinueWatchingSection } from './components/ContinueWatchingSection';
 import { MobileBottomNav } from './components/MobileBottomNav';
+import { Reveal } from './components/Reveal';
 const WeeklySchedule = lazy(() => import('./components/WeeklySchedule').then(m => ({ default: m.WeeklySchedule })));
 const SearchModal = lazy(() => import('./components/SearchModal').then(m => ({ default: m.SearchModal })));
 const DetailsModal = lazy(() => import('./components/DetailsModal').then(m => ({ default: m.DetailsModal })));
@@ -450,84 +451,100 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
                 <Suspense fallback={<div className="h-48" />}>
                 <>
                   {/* Continue Watching Section */}
-                  <ContinueWatchingSection
-                    history={watchHistory}
-                    onResume={(item) => handleWatch(item.slug, item.title)}
-                    onRemove={handleRemoveHistory}
-                    onClear={handleClearHistory}
-                  />
+                  <Reveal>
+                    <ContinueWatchingSection
+                      history={watchHistory}
+                      onResume={(item) => handleWatch(item.slug, item.title)}
+                      onRemove={handleRemoveHistory}
+                      onClear={handleClearHistory}
+                    />
+                  </Reveal>
 
                   {/* Curated Recommendations Masterpiece Rail (Slide ke samping) */}
                   {homeData?.recommendations && homeData.recommendations.length > 0 && (
-                    <FeaturedRail
-                      recommendations={homeData.recommendations}
+                    <Reveal>
+                      <FeaturedRail
+                        recommendations={homeData.recommendations}
+                        onSelect={handleOpenDetail}
+                        onWatch={handleWatch}
+                        onToggleBookmark={handleToggleBookmark}
+                        isBookmarked={isBookmarked}
+                      />
+                    </Reveal>
+                  )}
+
+                  {/* In-Page Interactive Daily Release Schedule */}
+                  <Reveal>
+                    <HomeScheduleSection
                       onSelect={handleOpenDetail}
                       onWatch={handleWatch}
                       onToggleBookmark={handleToggleBookmark}
                       isBookmarked={isBookmarked}
                     />
-                  )}
-
-                  {/* In-Page Interactive Daily Release Schedule */}
-                  <HomeScheduleSection
-                    onSelect={handleOpenDetail}
-                    onWatch={handleWatch}
-                    onToggleBookmark={handleToggleBookmark}
-                    isBookmarked={isBookmarked}
-                  />
+                  </Reveal>
 
                   {/* Popular & Trending Rankings (Multi-Timeframe Top 10) */}
                   {homeData?.popularToday && homeData.popularToday.length > 0 && (
-                    <PopularSliderSection
-                      popularToday={homeData.popularToday}
-                      donghuaPopular={homeData.donghuaPopular}
-                      onSelect={(item) => handleOpenDetail(item.slug)}
-                      onWatch={handleWatch}
-                      onToggleBookmark={handleToggleBookmark}
-                      isBookmarked={isBookmarked}
-                    />
+                    <Reveal>
+                      <PopularSliderSection
+                        popularToday={homeData.popularToday}
+                        donghuaPopular={homeData.donghuaPopular}
+                        onSelect={(item) => handleOpenDetail(item.slug)}
+                        onWatch={handleWatch}
+                        onToggleBookmark={handleToggleBookmark}
+                        isBookmarked={isBookmarked}
+                      />
+                    </Reveal>
                   )}
 
                   {/* Sedang Tayang (Ongoing Series Showcase) */}
                   {homeData?.donghuaBaru && homeData.donghuaBaru.length > 0 && (
-                    <OngoingSliderSection
-                      donghuaBaru={homeData.donghuaBaru}
-                      onSelect={(item) => handleOpenDetail(item.slug)}
-                      onWatch={handleWatch}
-                      onToggleBookmark={handleToggleBookmark}
-                      isBookmarked={isBookmarked}
-                    />
+                    <Reveal>
+                      <OngoingSliderSection
+                        donghuaBaru={homeData.donghuaBaru}
+                        onSelect={(item) => handleOpenDetail(item.slug)}
+                        onWatch={handleWatch}
+                        onToggleBookmark={handleToggleBookmark}
+                        isBookmarked={isBookmarked}
+                      />
+                    </Reveal>
                   )}
 
                   {/* Latest Released Episodes Feed */}
                   {homeData?.latestRelease && homeData.latestRelease.length > 0 && (
-                    <LatestUpdatedSection
-                      latestRelease={homeData.latestRelease}
-                      onSelect={(item) => handleOpenDetail(item.slug)}
-                      onWatch={handleWatch}
-                      onToggleBookmark={handleToggleBookmark}
-                      isBookmarked={isBookmarked}
-                    />
+                    <Reveal>
+                      <LatestUpdatedSection
+                        latestRelease={homeData.latestRelease}
+                        onSelect={(item) => handleOpenDetail(item.slug)}
+                        onWatch={handleWatch}
+                        onToggleBookmark={handleToggleBookmark}
+                        isBookmarked={isBookmarked}
+                      />
+                    </Reveal>
                   )}
 
                   {/* Rail terpisah per genre — slider kartu + panah prev/next */}
                   {['action', 'cultivation', 'fantasy', 'isekai'].map((slug) => (
                     <Suspense key={slug} fallback={<div className="h-48" />}>
-                      <GenreRailSection
-                        genreSlug={slug}
-                        onSelect={(item) => handleOpenDetail(item.slug)}
-                        onWatch={(item) => handleWatch(item.slug, item.title)}
-                        onToggleBookmark={handleToggleBookmark}
-                        isBookmarked={isBookmarked}
-                      />
+                      <Reveal>
+                        <GenreRailSection
+                          genreSlug={slug}
+                          onSelect={(item) => handleOpenDetail(item.slug)}
+                          onWatch={(item) => handleWatch(item.slug, item.title)}
+                          onToggleBookmark={handleToggleBookmark}
+                          isBookmarked={isBookmarked}
+                        />
+                      </Reveal>
                     </Suspense>
                   ))}
 
                   {/* Portal Status & Quality Features Banner */}
-                  <PortalStatsBanner
-                    onOpenSchedule={() => setScheduleOpen(true)}
-                    totalGenres={homeData?.genres?.length || 26}
-                  />
+                  <Reveal>
+                    <PortalStatsBanner
+                      onOpenSchedule={() => setScheduleOpen(true)}
+                      totalGenres={homeData?.genres?.length || 26}
+                    />
+                  </Reveal>
                 </>
                 </Suspense>
               )}
@@ -538,11 +555,13 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
 
       {/* Footer */}
       <Suspense fallback={null}>
-        <Footer
-          genres={homeData?.genres || []}
-          onSelectGenre={handleSelectGenre}
-          onOpenSchedule={() => setScheduleOpen(true)}
-        />
+        <Reveal>
+          <Footer
+            genres={homeData?.genres || []}
+            onSelectGenre={handleSelectGenre}
+            onOpenSchedule={() => setScheduleOpen(true)}
+          />
+        </Reveal>
       </Suspense>
 
       {/* Interactive Modals */}
