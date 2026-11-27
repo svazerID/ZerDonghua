@@ -29,6 +29,7 @@ import {
   WatchHistoryEntry
 } from './types';
 import { Sparkles, Film, Flame, AlertCircle, RefreshCw } from 'lucide-react';
+import { MotionConfig } from 'motion/react';
 
 export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | null }) {
   // Home Data State
@@ -370,6 +371,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
   };
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-canvas text-ink flex flex-col selection:bg-accent selection:text-white relative">
       {/* Main Header */}
       <Header
@@ -620,6 +622,7 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
         }}
       />
     </div>
+    </MotionConfig>
   );
 }
 
