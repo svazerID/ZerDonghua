@@ -13,6 +13,7 @@ import {
 import { SafeImage as Image } from './SafeImage';
 import { DonghuaDetail, DonghuaCardItem } from '../types';
 import { donghuaApi } from '../services/donghuaApi';
+import { motion } from 'motion/react';
 
 interface DetailsModalProps {
   slug: string;
@@ -50,8 +51,6 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (!slug) return null;
-
   const cardItem: DonghuaCardItem = {
     title: detail?.title || slug.replace(/-/g, ''),
     slug: slug,
@@ -64,9 +63,13 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
   const bookmarked = isBookmarked(slug);
 
   return (
-    <div
+    <motion.div
       id="details-modal"
-      className="fixed inset-0 z-50 bg-canvas/90 flex items-center sm:items-center justify-center p-2 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 bg-canvas/90 flex items-center sm:items-center justify-center p-2 sm:p-6 overflow-y-auto"
       onClick={onClose}
     >
       <div
@@ -278,6 +281,6 @@ export const DetailsModal: React.FC<DetailsModalProps> = ({
           </div>
         ) : null}
       </div>
-    </div>
+    </motion.div>
   );
 };

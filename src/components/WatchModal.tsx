@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { DonghuaStreamData, DonghuaHomeData } from '../types';
 import { donghuaApi } from '../services/donghuaApi';
+import { motion } from 'motion/react';
 import { SafeImage as Image } from './SafeImage';
 import { DonghuaCardSmall } from './DonghuaCardSmall';
 
@@ -107,8 +108,6 @@ export const WatchModal: React.FC<WatchModalProps> = ({
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (!slug) return null;
-
   const allMirrors = streamData?.mirrors ?? [];
   const playableMirrors = allMirrors.filter((m) => !isMirrorDead(m));
   const currentMirror =
@@ -120,9 +119,13 @@ export const WatchModal: React.FC<WatchModalProps> = ({
     streamData?.series?.slug || slug.replace(/-episode-\d+.*$/i, '');
 
   return (
-    <div
+    <motion.div
       id="watch-view"
-      className="fixed inset-0 z-50 bg-canvas overflow-y-auto flex flex-col text-sub animate-in fade-in duration-200"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 bg-canvas overflow-y-auto flex flex-col text-sub"
     >
       <div
         className={`relative w-full ${theaterMode ? "max-w-7xl" : "max-w-5xl"} mx-auto flex flex-col min-h-full bg-surface sm:border-x sm:border-line shadow-2xl transition-all duration-300`}
@@ -546,6 +549,6 @@ export const WatchModal: React.FC<WatchModalProps> = ({
 </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

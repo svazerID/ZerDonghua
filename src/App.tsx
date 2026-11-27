@@ -29,7 +29,7 @@ import {
   WatchHistoryEntry
 } from './types';
 import { Sparkles, Film, Flame, AlertCircle, RefreshCw } from 'lucide-react';
-import { MotionConfig } from 'motion/react';
+import { MotionConfig, AnimatePresence } from 'motion/react';
 
 export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | null }) {
   // Home Data State
@@ -574,26 +574,32 @@ export function App({ initialHomeData }: { initialHomeData?: DonghuaHomeData | n
           onClearHistory={handleClearHistory}
         />
 
-        {detailSlug && (
-          <DetailsModal
-            slug={detailSlug}
-            onClose={handleCloseDetail}
-            onWatchEpisode={(epSlug, title) => handleWatch(epSlug, title)}
-            onToggleBookmark={handleToggleBookmark}
-            isBookmarked={isBookmarked}
-          />
-        )}
+        <AnimatePresence>
+          {detailSlug && (
+            <DetailsModal
+              key="details"
+              slug={detailSlug}
+              onClose={handleCloseDetail}
+              onWatchEpisode={(epSlug, title) => handleWatch(epSlug, title)}
+              onToggleBookmark={handleToggleBookmark}
+              isBookmarked={isBookmarked}
+            />
+          )}
+        </AnimatePresence>
 
-        {watchSlug && (
-          <WatchModal
-            slug={watchSlug}
-            initialTitle={watchTitle}
-            onClose={handleCloseWatch}
-            onOpenDetail={handleOpenDetail}
-            onPlayEpisode={(epSlug, title) => handleWatch(epSlug, title)}
-            onSaveHistory={handleSaveHistory}
-          />
-        )}
+        <AnimatePresence>
+          {watchSlug && (
+            <WatchModal
+              key="watch"
+              slug={watchSlug}
+              initialTitle={watchTitle}
+              onClose={handleCloseWatch}
+              onOpenDetail={handleOpenDetail}
+              onPlayEpisode={(epSlug, title) => handleWatch(epSlug, title)}
+              onSaveHistory={handleSaveHistory}
+            />
+          )}
+        </AnimatePresence>
       </Suspense>
 
       {/* Floating Mobile Bottom Navigation Bar */}
