@@ -3,10 +3,10 @@ import { motion, useReducedMotion } from 'motion/react';
 
 // Single reveal used by every home section; `once` keeps it from
 // re-flashing when the user scrolls back up.
-// Hidden on the server and on the client's first render, so hydration
-// matches. `animate` (not whileInView) drives the fade: with reduced
-// motion MotionConfig strips whileInView entirely, which would leave the
-// section invisible.
+// `animate` (not whileInView) drives the fade: with reduced motion
+// MotionConfig strips whileInView entirely, leaving the section invisible.
+// Hidden on the server and on the client's first render so both agree; the
+// effect reveals it immediately when it is already on screen.
 export const Reveal: React.FC<{
   children: React.ReactNode;
   className?: string;
@@ -18,7 +18,13 @@ export const Reveal: React.FC<{
 
   React.useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setShown(true);
+      return;
+    }
+    // Already visible (or JS-less tab restore): show without waiting.
+    if (el.getBoundingClientRect().top < window.innerHeight) setShown(true);
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -32,17 +38,23 @@ export const Reveal: React.FC<{
     return () => observer.disconnect();
   }, []);
 
-  if (reduce) return <div className={className}>{children}</div>;
-
-  return (
-    <div ref={ref} className={className}>
+  if (!reduce) {
+    return (
       <motion.div
+        ref={ref}
+        className={className}
         initial={{ opacity: 0, y: 12 }}
         animate={shown ? { opacity: 1, y: 0 } : undefined}
         transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
       </motion.div>
+    );
+  }
+
+  return (
+    <div ref={ref} className={className}>
+      {children}
     </div>
   );
 };

@@ -59,7 +59,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         {/* Search Item */}
         <button
           onClick={onOpenSearch}
-          className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group"
+          className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group relative"
           title="Cari Donghua"
         >
           {activeTab === 'search' && (
@@ -80,7 +80,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         {/* Schedule Item */}
         <button
           onClick={onOpenSchedule}
-          className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group"
+          className="flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-2xl text-mute hover:text-ink transition-all cursor-pointer select-none active:scale-95 group relative"
           title="Jadwal Rilis"
         >
           {activeTab === 'schedule' && (
