@@ -52,14 +52,21 @@ export function normalizeMirrors<T extends MirrorLike>(mirrors: T[]): T[] {
     return (aHasAds ? 1 : -1) - (bHasAds ? 1 : -1);
   });
 
-  // Swap OK.ru and Dailymotion slots so Dailymotion leads and becomes the default
-  // player (see selectFirstPlayable in WatchModal). Targeted swap, not a global
-  // priority list, to avoid demoting anichin.stream/Premium (see donghuaServer.ts).
-  const dmIdx = normalized.findIndex((m) => /dailymotion|dai\.ly/i.test((m.name || '').toString()));
-  const okIdx = normalized.findIndex((m) => /ok\.?ru/i.test((m.name || '').toString()));
-  if (dmIdx >= 0 && okIdx >= 0 && dmIdx !== okIdx) {
-    [normalized[dmIdx], normalized[okIdx]] = [normalized[okIdx], normalized[dmIdx]];
-  }
+  // Fixed order requested: Dailymotion -> Rumble -> OK.ru -> others. Explicit
+  // rank only for these three, so other mirrors keep the ad-free ordering above
+  // and anichin.stream/Premium are not demoted (see donghuaServer.ts). Sorting
+  // by rank (not swapping positions) keeps the result stable whatever order the
+  // source sends.
+  const rank = (name: string) => {
+    const n = name.toLowerCase();
+    if (/dailymotion|dai\.ly/.test(n)) return 0;
+    if (/rumble/.test(n)) return 1;
+    if (/ok\.?ru/.test(n)) return 2;
+    return 3;
+  };
+  normalized.sort(
+    (a, b) => rank((a.name || '').toString()) - rank((b.name || '').toString())
+  );
 
   return normalized;
 }
